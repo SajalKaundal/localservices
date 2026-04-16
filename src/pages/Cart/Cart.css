@@ -1,0 +1,117 @@
+.cart-page {
+  padding-top: 100px;
+  min-height: 100vh;
+}
+
+.cart-page .heading-1 {
+  margin-bottom: 48px;
+}
+
+.flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.empty-cart {
+  padding: 120px 0;
+  background-color: var(--color-deep-teal);
+  border-radius: 12px;
+  border: 1px solid var(--color-dark-card-border);
+}
+
+.mt-24 {
+  margin-top: 24px;
+}
+
+.cart-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.cart-items, .cart-summary {
+  background-color: var(--color-deep-teal);
+  border: 1px solid var(--color-dark-card-border);
+  border-radius: 12px;
+  padding: 32px;
+  height: fit-content;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-shade-70);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-shade-70);
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.item-info .heading-4 {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--color-muted-text);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.remove-btn:hover {
+  color: var(--color-white);
+}
+
+.item-price {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.cart-summary .heading-3 {
+  margin-bottom: 32px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.total-row {
+  border-top: 1px solid var(--color-shade-70);
+  padding-top: 24px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+
+.neon-text {
+  color: var(--color-neon-green);
+}
+
+@media (max-width: 1024px) {
+  .cart-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,62 @@
+.service-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-deep-teal);
+  border: 1px solid var(--color-dark-card-border);
+  border-radius: 8px; /* Standard card radius */
+  padding: 24px;
+  text-decoration: none;
+  transition: box-shadow 300ms ease, transform 200ms ease;
+  height: 100%;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  /* The shadow expanding */
+  box-shadow: rgba(0,0,0,0.1) 0px 0px 0px 1px, 
+              rgba(0,0,0,0.15) 0px 4px 6px, 
+              rgba(0,0,0,0.15) 0px 8px 12px, 
+              rgba(0,0,0,0.15) 0px 16px 20px,
+              rgba(255,255,255,0.05) 0px 2px 0px inset; 
+}
+
+.service-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.service-card-header .heading-4 {
+  margin: 0;
+  color: var(--color-white);
+}
+
+.service-card-body {
+  flex-grow: 1;
+  margin-bottom: 24px;
+}
+
+.service-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid var(--color-shade-70);
+  padding-top: 16px;
+}
+
+.service-price {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.service-link {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-neon-green);
+}
