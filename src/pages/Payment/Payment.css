@@ -21,6 +21,36 @@
   margin-bottom: 32px;
 }
 
+.checkout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.step-badge {
+  color: var(--color-muted-text);
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 200ms ease;
+}
+
+.step-badge.active {
+  color: var(--color-neon-green);
+}
+
+.step-divider {
+  width: 40px;
+  height: 1px;
+  background-color: var(--color-shade-70);
+}
+
 .success-card {
   background-color: var(--color-deep-teal);
   border: 1px solid var(--color-dark-card-border);
@@ -67,6 +97,24 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.form-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: var(--color-muted-text);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.edit-btn:hover {
+  color: var(--color-white);
 }
 
 .form-group {
@@ -119,8 +167,31 @@
   color: var(--color-muted-text);
 }
 
+.summary-item-provider {
+  align-items: flex-start;
+}
+
+.summary-item-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-highlight-provider {
+  color: var(--color-neon-green);
+  opacity: 0.8;
+}
+
+/* Responsiveness adjustments */
 @media (max-width: 1024px) {
   .payment-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 }

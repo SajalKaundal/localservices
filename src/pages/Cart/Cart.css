@@ -66,6 +66,11 @@
   font-size: 24px;
 }
 
+.text-highlight-provider {
+  color: var(--color-neon-green);
+  opacity: 0.8;
+}
+
 .remove-btn {
   background: none;
   border: none;

@@ -1,0 +1,112 @@
+.provider-details-page {
+  padding-top: 100px; /* Offset nav */
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+.provider-details-page.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.provider-hero {
+  background-color: var(--color-deep-teal);
+  border: 1px solid var(--color-dark-card-border);
+  border-radius: 20px;
+  padding: 64px;
+  background-image: radial-gradient(circle at top right, var(--color-forest) 0%, transparent 60%);
+}
+
+.provider-hero .display-xl {
+  color: var(--color-white);
+  line-height: 1;
+}
+
+.provider-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 32px;
+}
+
+.detail-card {
+  background-color: var(--color-deep-teal);
+  border: 1px solid var(--color-dark-card-border);
+  border-radius: 12px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-header {
+  margin-bottom: 24px;
+}
+
+.detail-badge {
+  margin-bottom: 16px;
+}
+
+.detail-header .heading-3 {
+  color: var(--color-white);
+  line-height: 1.1;
+}
+
+.detail-body {
+  flex-grow: 1;
+  margin-bottom: 40px;
+}
+
+.detail-body .body-large {
+  color: var(--color-muted-text);
+}
+
+.detail-price-box {
+  background-color: var(--color-dark-forest);
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--color-dark-card-border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.price-label {
+  font-size: 14px;
+  color: var(--color-muted-text);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.price-value {
+  color: var(--color-neon-green); 
+  font-size: 48px; 
+}
+
+.detail-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.mt-64 { margin-top: 64px; }
+.mb-40 { margin-bottom: 40px; }
+
+@media (max-width: 768px) {
+  .provider-services-grid {
+    grid-template-columns: 1fr;
+  }
+  .provider-hero {
+    padding: 32px;
+  }
+  .provider-hero .display-xl {
+    font-size: 48px;
+  }
+  .detail-card {
+    padding: 24px;
+  }
+  .detail-actions {
+    flex-direction: column;
+  }
+}

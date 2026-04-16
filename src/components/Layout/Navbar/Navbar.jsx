@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Button from '../../Button/Button';
 import './Navbar.css';
 
-const Navbar = ({ cartCount, isLoggedIn, onLogin, onLogout }) => {
+const Navbar = ({ cartCount, isLoggedIn, isProvider, onLogin, onLogout }) => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
@@ -33,6 +33,12 @@ const Navbar = ({ cartCount, isLoggedIn, onLogin, onLogout }) => {
             Cart
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </Link>
+
+          {isProvider ? (
+            <Link to="/provider/dashboard" className={`nav-link ${location.pathname === '/provider/dashboard' ? 'active' : ''}`}>Dashboard</Link>
+          ) : (
+            <Link to="/provider/register" className={`nav-link ${location.pathname === '/provider/register' ? 'active' : ''}`}>Become a Provider</Link>
+          )}
 
           <div className="navbar-actions">
             {isLoggedIn ? (

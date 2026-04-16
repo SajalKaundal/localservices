@@ -1,57 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import ServiceCard from '../../components/ServiceCard/ServiceCard';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Badge from '../../components/Badge/Badge';
 import './Services.css';
 
-const Services = ({ services }) => {
-  const [activeCategory, setActiveCategory] = useState('All');
-  const location = useLocation();
+const Services = ({ providers }) => {
+  // Aggregate all unique categories from all providers
+  const allCategories = new Set();
+  providers.forEach(prov => prov.services.forEach(svc => allCategories.add(svc.category)));
+  const categories = Array.from(allCategories);
 
-  // Extract all categories
-  const categories = ['All', ...new Set(services.map(s => s.category))];
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const cat = params.get('category');
-    if (cat && categories.includes(cat)) {
-      setActiveCategory(cat);
-    }
-  }, [location]);
-
-  const filteredServices = activeCategory === 'All' 
-    ? services 
-    : services.filter(s => s.category === activeCategory);
+  // In a real app we might fetch image URLs or descriptions for categories. Here we'll map a basic design.
 
   return (
     <div className="services-page">
       <div className="services-header">
         <div className="section-container">
-          <h1 className="heading-1">Our Services</h1>
-          <p className="body-large body-muted">Select a category to find EXACTLY what you need.</p>
+          <h1 className="heading-1">Service Directory</h1>
+          <p className="body-large body-muted">Select a category to browse top-rated local providers.</p>
         </div>
       </div>
 
       <div className="section-container">
-        {/* Category Filters */}
-        <div className="category-filters">
-          {categories.map(cat => (
-            <button 
-              key={cat} 
-              className={`filter-btn ${activeCategory === cat ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <div className="categories-grid">
+          {categories.map((cat, idx) => {
+             // Find how many providers offer this
+             const providerCount = providers.filter(p => p.services.some(s => s.category === cat)).length;
+             return (
+               <Link to={`/category/${encodeURIComponent(cat)}`} key={idx} className="category-card shadow-medium text-center">
+                 <h2 className="heading-3 mb-16">{cat}</h2>
+                 <Badge>{providerCount} Available Providers</Badge>
+               </Link>
+             );
+          })}
 
-        {/* Services Grid */}
-        <div className="services-grid">
-          {filteredServices.map(service => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-          {filteredServices.length === 0 && (
-            <p className="body-large body-muted no-results">No services found in this category.</p>
+          {categories.length === 0 && (
+            <p className="body-large body-muted no-results">No categories available. Become the first provider!</p>
           )}
         </div>
       </div>
