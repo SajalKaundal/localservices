@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Color Palette & Roles */
   --color-white: #FFFFFF;
   --color-black: #000000;
+  
+  /* Secondary & Accent */
   --color-neon-green: #36F4A4;
   --color-aloe: #C1FBD4;
   --color-pistachio: #D4F9E0;
@@ -23,15 +25,28 @@
   --color-shade-70: #3F3F46;
 
   /* Fonts */
-  /* Using Inter instead of NeueHaasGrotesk for web safety, but keeping the visual feel */
+  /* Simulating NeueHaasGrotesk with Inter for headings, Inter for body */
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing System */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 28px;
+  --space-7: 32px;
+  --space-8: 36px;
+  --space-9: 40px;
+  --space-10: 64px;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-feature-settings: "ss03" 1; /* Simulate Shopify typographic feature */
 }
 
 body {
@@ -47,17 +62,24 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 330; /* We'll map to 400 if 330 is unavailable, but explicitly state it */
+  font-weight: 300; /* Simulating 330 */
+  color: var(--color-white);
 }
 
-/* Base typographic sizes based on DESIGN.md */
-.display-xl { font-size: 96px; font-weight: 400; line-height: 1.0; }
+/* Base typographic hierarchy based on DESIGN.md */
+.display-xl { font-size: 96px; font-weight: 300; line-height: 1.0; }
 .heading-1 { font-size: 70px; font-weight: 300; line-height: 1.0; }
 .heading-2 { font-size: 55px; font-weight: 300; line-height: 1.16; }
 .heading-3 { font-size: 48px; font-weight: 300; line-height: 1.14; }
 .heading-4 { font-size: 32px; font-weight: 400; line-height: 1.14; letter-spacing: 0.32px; }
+.heading-5 { font-size: 28px; font-weight: 500; line-height: 1.28; letter-spacing: 0.42px; }
+.heading-6 { font-size: 24px; font-weight: 400; line-height: 1.14; letter-spacing: 0.36px; }
+
 .body-large { font-size: 20px; font-weight: 500; line-height: 1.40; letter-spacing: 0.3px; }
 .body-muted { color: var(--color-muted-text); }
+.body-small { font-size: 16px; line-height: 1.50; }
+
+.caption { font-size: 14px; font-weight: 500; line-height: 1.49; letter-spacing: 0.28px; }
 
 /* Global Utilities */
 .shadow-subtle {
@@ -85,4 +107,21 @@ a {
 
 ul {
   list-style: none;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-10);
+}
+
+@media (max-width: 1024px) {
+  .container { padding: 0 var(--space-7); }
+  .display-xl { font-size: 70px; }
+}
+
+@media (max-width: 640px) {
+  .container { padding: 0 var(--space-4); }
+  .display-xl { font-size: 48px; }
+  .heading-1 { font-size: 48px; }
 }

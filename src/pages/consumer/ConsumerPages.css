@@ -1,0 +1,60 @@
+.consumer-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.wizard-card {
+  padding: var(--space-8);
+}
+
+.wizard-progress {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-dark-card-border);
+  padding-bottom: var(--space-4);
+}
+
+.progress-step {
+  flex: 1;
+  text-align: center;
+  color: var(--color-shade-50);
+  font-weight: 500;
+  padding: var(--space-2);
+}
+
+.progress-step.active {
+  color: var(--color-neon-green);
+  border-bottom: 2px solid var(--color-neon-green);
+  margin-bottom: calc(var(--space-4) * -1 - 1px);
+}
+
+.wizard-content {
+  min-height: 250px;
+  margin-bottom: var(--space-8);
+}
+
+.wizard-actions {
+  display: flex;
+  gap: var(--space-4);
+  border-top: 1px solid var(--color-dark-card-border);
+  padding-top: var(--space-6);
+}
+
+/* My Bookings Table */
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-dark-card-border);
+}
+
+.bookings-table th {
+  color: var(--color-shade-30);
+  font-weight: 500;
+}
