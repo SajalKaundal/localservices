@@ -17,6 +17,7 @@ import BookingDetails from '../pages/consumer/BookingDetails';
 import Messaging from '../pages/consumer/Messaging';
 import Payments from '../pages/consumer/Payments';
 import ConsumerProfile from '../pages/consumer/Profile';
+import EditConsumerProfile from '../pages/consumer/EditProfile';
 
 import ProviderDashboard from '../pages/provider/Dashboard';
 import ProviderOnboarding from '../pages/provider/Onboarding';
@@ -27,6 +28,7 @@ import ProviderEarnings from '../pages/provider/Earnings';
 import BookingRequests from '../pages/provider/BookingRequests';
 import MyJobs from '../pages/provider/MyJobs';
 import ProviderProfile from '../pages/provider/Profile';
+import EditProviderProfile from '../pages/provider/EditProfile';
 
 import AdminLayout from '../layouts/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -56,6 +58,7 @@ const AppRoutes = () => {
         <Route path="/consumer/messages" element={<Messaging />} />
         <Route path="/consumer/payments" element={<Payments />} />
         <Route path="/consumer/profile" element={<ConsumerProfile />} />
+        <Route path="/consumer/profile/edit" element={<EditConsumerProfile />} />
         
         <Route path="/provider/dashboard" element={<ProviderDashboard />} />
         <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
@@ -66,6 +69,7 @@ const AppRoutes = () => {
         <Route path="/provider/requests" element={<BookingRequests />} />
         <Route path="/provider/jobs" element={<MyJobs />} />
         <Route path="/provider/profile" element={<ProviderProfile />} />
+        <Route path="/provider/profile/edit" element={<EditProviderProfile />} />
       </Route>
 
       <Route element={<AdminLayout />}>

@@ -33,7 +33,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <Link to="/" className="navbar-brand">
+          <Link to={isProvider ? '/provider/dashboard' : '/'} className="navbar-brand">
             <span className="brand-text">Local</span>
             <span className="brand-accent">Serve</span>
           </Link>

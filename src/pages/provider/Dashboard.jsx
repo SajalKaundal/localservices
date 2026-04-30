@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 // Reusing consumer dashboard CSS for grid structure
 import '../consumer/Dashboard.css'; 
@@ -12,6 +13,7 @@ const newRequests = [
 ];
 
 const ProviderDashboard = () => {
+  const navigate = useNavigate();
   return (
     <div className="provider-dashboard">
       <div className="dashboard-grid">
@@ -69,7 +71,7 @@ const ProviderDashboard = () => {
             <p className="body-muted" style={{marginBottom: '16px', fontSize: '14px'}}>
               Add 2 more photos to your portfolio to reach 100%.
             </p>
-            <Button variant="secondary" style={{width: '100%'}}>Edit Profile</Button>
+            <Button variant="secondary" style={{width: '100%'}} onClick={() => navigate('/provider/profile/edit')}>Edit Profile</Button>
           </Card>
         </div>
       </div>

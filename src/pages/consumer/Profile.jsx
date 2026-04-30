@@ -1,22 +1,37 @@
 import React from 'react';
 import Card from '../../components/ui/Card';
-import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+  const navigate = useNavigate();
   return (
     <div className="consumer-page">
-      <h2 className="heading-3" style={{marginBottom: '24px'}}>Profile Settings</h2>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+        <h2 className="heading-3">Profile Settings</h2>
+        <Button variant="primary" onClick={() => navigate('/consumer/profile/edit')}>Edit Profile</Button>
+      </div>
       
       <Card elevation="medium" style={{marginBottom: '24px'}}>
         <h3 className="heading-5" style={{marginBottom: '16px'}}>Personal Information</h3>
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
-          <Input label="First Name" defaultValue="John" />
-          <Input label="Last Name" defaultValue="Doe" />
-          <Input label="Email" defaultValue="john.doe@example.com" />
-          <Input label="Phone" defaultValue="+1 234 567 8900" />
+          <div>
+            <p className="body-muted" style={{fontSize: '12px'}}>First Name</p>
+            <p style={{fontSize: '16px', color: '#F8FAFC', marginTop: '4px'}}>John</p>
+          </div>
+          <div>
+            <p className="body-muted" style={{fontSize: '12px'}}>Last Name</p>
+            <p style={{fontSize: '16px', color: '#F8FAFC', marginTop: '4px'}}>Doe</p>
+          </div>
+          <div>
+            <p className="body-muted" style={{fontSize: '12px'}}>Email</p>
+            <p style={{fontSize: '16px', color: '#F8FAFC', marginTop: '4px'}}>john.doe@example.com</p>
+          </div>
+          <div>
+            <p className="body-muted" style={{fontSize: '12px'}}>Phone</p>
+            <p style={{fontSize: '16px', color: '#F8FAFC', marginTop: '4px'}}>+1 234 567 8900</p>
+          </div>
         </div>
-        <Button variant="primary" style={{marginTop: '16px'}}>Save Changes</Button>
       </Card>
 
       <Card elevation="medium">
@@ -26,7 +41,6 @@ const Profile = () => {
             <h5 className="heading-6">Home</h5>
             <p className="body-muted" style={{marginTop: '4px'}}>123 Main St, Apt 4B, New York, NY 10001</p>
           </Card>
-          <Button variant="secondary" style={{alignSelf: 'flex-start'}}>Add New Address</Button>
         </div>
       </Card>
     </div>

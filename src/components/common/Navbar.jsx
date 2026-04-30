@@ -19,7 +19,7 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container navbar-container">
-        <Link to="/" className="navbar-brand">
+        <Link to={userRole === 'provider' ? '/provider/dashboard' : '/'} className="navbar-brand">
           <span className="brand-text">Local</span>
           <span className="brand-accent">Serve</span>
         </Link>

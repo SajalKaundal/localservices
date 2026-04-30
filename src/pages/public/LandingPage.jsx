@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
@@ -21,6 +21,13 @@ const providers = [
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'provider') {
+      navigate('/provider/dashboard');
+    }
+  }, [navigate]);
 
   return (
     <div className="landing-page">
