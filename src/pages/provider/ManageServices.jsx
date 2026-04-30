@@ -2,13 +2,16 @@ import React from 'react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { useNavigate } from 'react-router-dom';
 
 const ManageServices = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="provider-page">
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
         <h2 className="heading-3">Manage Services</h2>
-        <Button variant="primary">Add New Service</Button>
+        <Button variant="primary" onClick={() => navigate('/provider/services/add')}>Add New Service</Button>
       </div>
 
       <Card elevation="medium">
@@ -29,7 +32,7 @@ const ManageServices = () => {
               <td>Fixed</td>
               <td>₹45.00</td>
               <td>
-                <Button variant="ghost" style={{padding: '4px 8px'}}>Edit</Button>
+                <Button variant="ghost" style={{padding: '4px 8px'}} onClick={() => navigate('/provider/services/edit/1')}>Edit</Button>
                 <Button variant="ghost" style={{padding: '4px 8px', color: '#EF4444'}}>Delete</Button>
               </td>
             </tr>
@@ -39,7 +42,7 @@ const ManageServices = () => {
               <td>Hourly</td>
               <td>₹35.00 / hr</td>
               <td>
-                <Button variant="ghost" style={{padding: '4px 8px'}}>Edit</Button>
+                <Button variant="ghost" style={{padding: '4px 8px'}} onClick={() => navigate('/provider/services/edit/2')}>Edit</Button>
                 <Button variant="ghost" style={{padding: '4px 8px', color: '#EF4444'}}>Delete</Button>
               </td>
             </tr>

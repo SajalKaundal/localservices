@@ -21,6 +21,8 @@ import ConsumerProfile from '../pages/consumer/Profile';
 import ProviderDashboard from '../pages/provider/Dashboard';
 import ProviderOnboarding from '../pages/provider/Onboarding';
 import ManageServices from '../pages/provider/ManageServices';
+import AddService from '../pages/provider/AddService';
+import EditService from '../pages/provider/EditService';
 import ProviderEarnings from '../pages/provider/Earnings';
 import BookingRequests from '../pages/provider/BookingRequests';
 import MyJobs from '../pages/provider/MyJobs';
@@ -58,6 +60,8 @@ const AppRoutes = () => {
         <Route path="/provider/dashboard" element={<ProviderDashboard />} />
         <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
         <Route path="/provider/services" element={<ManageServices />} />
+        <Route path="/provider/services/add" element={<AddService />} />
+        <Route path="/provider/services/edit/:id" element={<EditService />} />
         <Route path="/provider/earnings" element={<ProviderEarnings />} />
         <Route path="/provider/requests" element={<BookingRequests />} />
         <Route path="/provider/jobs" element={<MyJobs />} />
