@@ -7,10 +7,10 @@ import Badge from '../../components/ui/Badge';
 import './LandingPage.css';
 
 const categories = [
-  { id: 1, name: 'Home Cleaning', image: '/images/HouseCleaning.jpg', desc: 'Professional deep cleaning & tidying for your entire home.' },
-  { id: 2, name: 'Electrician', image: '/images/Electrician.jpg', desc: 'Expert wiring, installations, and quick electrical repairs.' },
-  { id: 3, name: 'Plumbing', image: '/images/Plumber.jpg', desc: 'Fix leaks, install fixtures, and resolve pipe issues fast.' },
-  { id: 4, name: 'AC Repair', image: '/images/AcRepair.jpg', desc: 'Reliable servicing, gas refills, and cooling solutions.' },
+  { id: 1, name: 'Home Cleaning', image: './images/HouseCleaning.jpg', desc: 'Professional deep cleaning & tidying for your entire home.' },
+  { id: 2, name: 'Electrician', image: './images/Electrician.jpg', desc: 'Expert wiring, installations, and quick electrical repairs.' },
+  { id: 3, name: 'Plumbing', image: './images/Plumber.jpg', desc: 'Fix leaks, install fixtures, and resolve pipe issues fast.' },
+  { id: 4, name: 'AC Repair', image: './images/AcRepair.jpg', desc: 'Reliable servicing, gas refills, and cooling solutions.' },
 ];
 
 const providers = [
