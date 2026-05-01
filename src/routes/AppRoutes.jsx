@@ -48,7 +48,7 @@ const AppRoutes = () => {
         <Route path="/providers" element={<ProvidersPage />} />
         <Route path="/provider/:id" element={<ProviderDetail />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/consumer/book" element={<BookingFlow />} />
+        <Route path="/consumer/book/:id" element={<BookingFlow />} />
       </Route>
       
       <Route element={<DashboardLayout />}>
