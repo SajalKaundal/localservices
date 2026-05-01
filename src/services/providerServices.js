@@ -10,21 +10,36 @@ const fetchServices = async (_id) => {
 
     const data = await response.json();
     return data.services;
-
   } catch (err) {
     console.error(err.message);
-    throw err
+    throw err;
   }
 };
 
-const addService = async (providerId, service) => {
+const fetchService = async (pid,sid) => {
+  try{
+    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`)
+    const data = await response.json()
+
+    if(!data.success){
+      throw new Error("Fetching Service Failed")
+    }
+
+    return data.service
+  }catch(err){
+    console.error(err.message)
+    throw err
+  }
+}
+
+const addService = async (pid, service) => {
   try {
-    const response = await fetch(`${API_URL}/provider/${providerId}/services`, {
+    const response = await fetch(`${API_URL}/provider/${pid}/services`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(service)
+      body: JSON.stringify(service),
     });
 
     if (!response.ok) {
@@ -38,11 +53,43 @@ const addService = async (providerId, service) => {
     }
 
     return data;
-
   } catch (err) {
     console.error(err.message);
     throw err; // important if caller needs to handle it
   }
 };
 
-export { fetchServices,addService };
+const deleteService = async (pid,sid) => {
+  try {
+    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`, {
+      method: "DELETE",
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error("Service not Deleted");
+    }
+    return data.deletedService;
+  } catch (err) {
+    console.error(err.message);
+    throw err
+  }
+};
+
+const updateService = async (pid,sid,service) => {
+  try{
+    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`,{
+      method:"PATCH",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(service)
+    })
+    const data = await response.json()
+    return data.service;
+  }catch(err){
+    console.error(err.message)
+    throw err
+  }
+}
+
+export { fetchServices, addService, deleteService, fetchService,updateService };

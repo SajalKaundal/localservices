@@ -3,11 +3,22 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import { useNavigate } from "react-router-dom";
-import { fetchServices } from "../../services/providerServices";
+import { deleteService, fetchServices } from "../../services/providerServices";
 
 const ManageServices = () => {
+
   const navigate = useNavigate();
+
   const [services, setServices] = useState([]);
+
+  const onDelete = async (sid) => {
+    try {
+      await deleteService("69f36e3d65de75f0df8f8e7d", sid);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     const getServices = async () => {
       try {
@@ -17,8 +28,10 @@ const ManageServices = () => {
         console.error(err.message);
       }
     };
+
     getServices();
   }, []);
+
   return (
     <div className="provider-page">
       <div
@@ -56,18 +69,19 @@ const ManageServices = () => {
                   <td>{s.name}</td>
                   <td>{s.category}</td>
                   <td>{s.pricingType}</td>
-                  <td>{`₹${s.basePrice}${s.pricingType === "hourly"? " /hr":""}`}</td>
+                  <td>{`₹${s.basePrice}${s.pricingType === "hourly" ? " /hr" : ""}`}</td>
                   <td>
                     <Button
                       variant="ghost"
                       style={{ padding: "4px 8px" }}
-                      onClick={() => navigate("/provider/services/edit/1")}
+                      onClick={() => navigate(`/provider/services/edit/${s._id}`)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="ghost"
                       style={{ padding: "4px 8px", color: "#EF4444" }}
+                      onClick={() => onDelete(s._id)}
                     >
                       Delete
                     </Button>
