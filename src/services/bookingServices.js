@@ -1,3 +1,4 @@
+import { body } from "framer-motion/client"
 import { SiD } from "react-icons/si"
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -42,9 +43,26 @@ const fetchServiceDetails = async (sid=undefined,pid) => {
 
 }
 
-const createBooking = async (booking)=>{
+const createBooking = async (uid,booking)=>{
   try{
+    const response = await fetch(`${API_URL}/user/bookings/${uid}`,
+      {method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(booking)
+      }
+    )
+    const data =  await response.json()
 
-  }catch
+    if(!data.success){
+      throw new Error("Unable to Create a Booking")
+    }
+
+    return data
+  }catch(err){
+    console.error(err.message)
+    throw err
+  }
 }
-export {fetchUserBookings,fetchServiceDetails}
+export {fetchUserBookings,fetchServiceDetails,createBooking}
