@@ -15,7 +15,7 @@ const ProviderDetail = () => {
     const getProvider = async () => {
       try {
         const provider = await fetchProvider(id);
-        console.log(provider);
+        // console.log(provider);
         setProvider(provider);
       } catch (err) {
         console.error(err.message);
@@ -95,7 +95,7 @@ const ProviderDetail = () => {
                         <span className="heading-5">{`₹${s.basePrice}${s.pricingType==="hourly"?"/hr":""}`}</span>
                         <Button
                           variant="secondary"
-                          onClick={() => navigate(`/consumer/book/${s.id}/?service=true`)}
+                          onClick={() => navigate(`/consumer/book?serviceId=${s._id}&providerId=${provider._id}`)}
                         >
                           Book
                         </Button>
@@ -140,7 +140,7 @@ const ProviderDetail = () => {
               <Button
                 variant="primary"
                 style={{ width: "100%" }}
-                onClick={() => navigate(`/consumer/book/${provider._id}/?service=false`)}
+                onClick={() => navigate(`/consumer/book?providerId=${provider._id}`)}
               >
                 Start Booking
               </Button>

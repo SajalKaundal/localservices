@@ -97,7 +97,7 @@ const MyBookings = () => {
                       {b.status}
                     </Badge>
                   </td>
-                  <td>{b.price}</td>
+                  <td>₹{b.price}</td>
                   <td>
                     {b.status === "confirmed" && (
                       <Button
