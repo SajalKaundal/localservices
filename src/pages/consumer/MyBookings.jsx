@@ -40,7 +40,7 @@ const MyBookings = () => {
     const getBookings = async () => {
       try {
         const bookings = await fetchUserBookings("69f3769965de75f0df8f8eac");
-        console.log(bookings)
+        // console.log(bookings)
         setBookings(bookings);
       } catch (err) {
         console.error(err.message);

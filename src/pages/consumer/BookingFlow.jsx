@@ -6,14 +6,6 @@ import Button from "../../components/ui/Button";
 import "./ConsumerPages.css";
 import { fetchServiceDetails } from "../../services/bookingServices";
 
-const AVAILABLE_SERVICES = [
-  { id: "s1", name: "AC Deep Cleaning", price: 45 },
-  { id: "s2", name: "AC Gas Refill", price: 85 },
-  { id: "s3", name: "Plumbing Fix", price: 120 },
-  { id: "s4", name: "Car Wash", price: 25 },
-  { id: "s5", name: "Home Cleaning", price: 30 },
-];
-
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
     const script = document.createElement("script");
@@ -28,49 +20,87 @@ const BookingFlow = () => {
   const [searchParams] = useSearchParams();
   const serviceId = searchParams.get("serviceId");
   const providerId = searchParams.get("providerId");
-  console.log(`serviceId: ${serviceId} providerId :${providerId} `);
-  const [step, setStep] = useState(1);
-  const [selectedServiceId, setSelectedServiceId] = useState(
-    AVAILABLE_SERVICES[0].id,
-  );
+
   const navigate = useNavigate();
 
-  const selectedService = AVAILABLE_SERVICES.find(
-    (s) => s.id === selectedServiceId,
-  );
+  const [step, setStep] = useState(1);
+  const [services, setServices] = useState([]);
+  const [selectedServiceId, setSelectedServiceId] = useState("");
+
+  const selectedService = services.find((s) => s._id === selectedServiceId);
+
+  const [formData, setFormData] = useState({
+    provider: providerId,
+    service: "",
+    price: "",
+    address: "",
+    scheduledAt: "",
+    timeSlot: "",
+    notes: "",
+    transactionId: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (transactionId) => {
+    const finalData = {
+      ...formData,
+      transactionId,
+    };
+
+    console.log("Final Booking Data:", finalData);
+
+    // TODO: Call your backend API here
+  };
 
   const handlePaymentAndBook = async () => {
+    if (!selectedService) {
+      alert("Please select a service");
+      return;
+    }
+
     const res = await loadRazorpayScript();
 
     if (!res) {
-      alert("Razorpay SDK failed to load. Are you offline?");
+      alert("Razorpay SDK failed to load.");
       return;
     }
 
     const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+
     if (!razorpayKey) {
-      alert(
-        "Razorpay Key is missing! Please add VITE_RAZORPAY_KEY_ID to your .env file.",
-      );
+      alert("Missing Razorpay Key in .env");
       return;
     }
 
+    const amount = Math.round(formData.price * 100);
+
     const options = {
       key: razorpayKey,
-      amount: selectedService.price * 100, // amount in smallest currency unit
+      amount,
       currency: "INR",
       name: "LocalServe",
       description: `Payment for ${selectedService.name}`,
+
       handler: function (response) {
-        alert(
-          `Payment Successful! Booking Confirmed. Payment ID: ${response.razorpay_payment_id}`,
-        );
+        const transactionId = response.razorpay_payment_id;
+
+        alert(`Payment Successful! Payment ID: ${transactionId}`);
+
+        handleSubmit(transactionId);
         navigate("/consumer/bookings");
       },
+
       prefill: {
         name: "Test User",
         email: "test@example.com",
       },
+
       theme: {
         color: "#36f4a4",
       },
@@ -81,22 +111,26 @@ const BookingFlow = () => {
   };
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
-    else handlePaymentAndBook();
+    if (step < 3) {
+      setStep(step + 1);
+    } else {
+      handlePaymentAndBook();
+    }
   };
 
-  const [services,setServices] = useState([])
-  useEffect(()=>{
-    const getServices= async()=>{
-      try{
-        const services= await fetchServiceDetails(serviceId,providerId)
-        setServices(services)
-      }catch(err){
-        console.err(err.message)
+  useEffect(() => {
+    const getServices = async () => {
+      try {
+        const data = await fetchServiceDetails(serviceId, providerId);
+        setServices(data);
+      } catch (err) {
+        console.error(err.message);
       }
-    }
-    getServices()
-  },[serviceId,providerId])
+    };
+
+    getServices();
+  }, [serviceId, providerId]);
+
   return (
     <div
       className="consumer-page"
@@ -132,49 +166,57 @@ const BookingFlow = () => {
               <h4 className="heading-5" style={{ marginBottom: "16px" }}>
                 Service Details
               </h4>
+
               <div className="input-group" style={{ marginBottom: "16px" }}>
-                <label
-                  className="input-label"
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontSize: "14px",
-                    color: "var(--color-shade-50)",
-                  }}
-                >
-                  Select Service
-                </label>
+                <label className="input-label">Select Service</label>
+
                 <select
-                  className="input-field focus-ring"
+                  className="input-field"
                   value={selectedServiceId}
-                  onChange={(e) => setSelectedServiceId(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--color-dark-card-border)",
-                    background: "var(--color-void)",
-                    color: "var(--color-white)",
-                    outline: "none",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontSize: "16px",
+                  onChange={(e) => {
+                    const selected = services.find(
+                      (s) => s._id === e.target.value,
+                    );
+
+                    if (!selected) return;
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      service: selected._id,
+                      price:
+                        selected.pricingType === "hourly"
+                          ? selected.basePrice
+                          : selected.basePrice * 0.1,
+                    }));
+
+                    setSelectedServiceId(e.target.value);
                   }}
                 >
+                  <option value="">Select a service</option>
+
                   {services.map((s) => (
                     <option key={s._id} value={s._id}>
-                      {s.name} - ₹{s.basePrice}
+                      {s.name} - ₹
+                      {s.pricingType === "hourly"
+                        ? s.basePrice.toFixed(2)
+                        : (s.basePrice * 0.1).toFixed(2)}
                     </option>
                   ))}
                 </select>
               </div>
+
               <Input
                 label="Location / Address"
-                placeholder="123 Main St, Apt 4B"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
               />
+
               <Input
                 label="Special Instructions"
-                placeholder="Any specific requirements?"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
               />
             </div>
           )}
@@ -184,41 +226,51 @@ const BookingFlow = () => {
               <h4 className="heading-5" style={{ marginBottom: "16px" }}>
                 Select Date & Time
               </h4>
-              <Input type="date" label="Preferred Date" />
-              <Input type="time" label="Preferred Time" />
+
+              <Input
+                type="date"
+                label="Preferred Date"
+                name="scheduledAt"
+                onChange={handleChange}
+              />
+
+              <Input
+                type="time"
+                label="Preferred Time"
+                name="timeSlot"
+                onChange={handleChange}
+              />
             </div>
           )}
 
-          {step === 3 && (
+          {step === 3 && selectedService && (
             <div className="step-content">
               <h4 className="heading-5" style={{ marginBottom: "16px" }}>
                 Review Booking
               </h4>
+
               <Card elevation="subtle" style={{ marginBottom: "16px" }}>
-                <p className="body-muted">
+                <p>
                   Service: <strong>{selectedService.name}</strong>
                 </p>
-                <p className="body-muted">
-                  Provider: <strong>Assigned Expert</strong>
+                <p>
+                  Date: <strong>{formData.scheduledAt}</strong>
                 </p>
-                <p className="body-muted">
-                  Date: <strong>Selected Schedule</strong>
-                </p>
-                <hr
-                  style={{
-                    margin: "12px 0",
-                    borderColor: "var(--color-shade-70)",
-                  }}
-                />
+
+                <hr />
+
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
                 >
                   <span>Booking Amount</span>
-                  <span
-                    className="heading-5"
-                    style={{ color: "var(--color-neon-green)" }}
-                  >
-                    ₹{selectedService.price.toFixed(2)}
+                  <span>
+                    ₹
+                    {selectedService.pricingType === "hourly"
+                      ? selectedService.basePrice.toFixed(2)
+                      : (selectedService.basePrice * 0.1).toFixed(2)}
                   </span>
                 </div>
               </Card>

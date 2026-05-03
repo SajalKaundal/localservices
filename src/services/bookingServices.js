@@ -41,4 +41,10 @@ const fetchServiceDetails = async (sid=undefined,pid) => {
   }
 
 }
+
+const createBooking = async (booking)=>{
+  try{
+
+  }catch
+}
 export {fetchUserBookings,fetchServiceDetails}
