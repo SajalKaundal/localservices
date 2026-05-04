@@ -124,4 +124,18 @@ ul {
   .container { padding: 0 var(--space-4); }
   .display-xl { font-size: 48px; }
   .heading-1 { font-size: 48px; }
+  .heading-2 { font-size: 40px; }
+  .heading-3 { font-size: 32px; }
+  .heading-4 { font-size: 24px; }
+  .heading-5 { font-size: 20px; }
+  .heading-6 { font-size: 18px; }
+}
+
+@media (max-width: 768px) {
+  .bookings-table, 
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

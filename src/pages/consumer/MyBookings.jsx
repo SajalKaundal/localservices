@@ -4,6 +4,7 @@ import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import "./ConsumerPages.css";
 import { fetchUserBookings } from "../../services/bookingServices";
+import { initiatePayment } from "../../utils/paymentUtils";
 import { useState, useEffect } from "react";
 
 const myBookings = [
@@ -83,18 +84,22 @@ const MyBookings = () => {
                         backgroundColor:
                           b.status === "confirmed"
                             ? "rgba(54, 244, 164, 0.2)"
-                            : b.status === "completed"
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(245, 158, 11, 0.2)",
+                            : b.status === "in-progress"
+                              ? "rgba(59, 130, 246, 0.2)"
+                              : b.status === "completed"
+                                ? "rgba(255,255,255,0.1)"
+                                : "rgba(245, 158, 11, 0.2)",
                         color:
                           b.status === "confirmed"
                             ? "var(--color-neon-green)"
-                            : b.status === "completed"
-                              ? "white"
-                              : "#FCD34D",
+                            : b.status === "in-progress"
+                              ? "#60A5FA"
+                              : b.status === "completed"
+                                ? "white"
+                                : "#FCD34D",
                       }}
                     >
-                      {b.status}
+                      {b.status === "in-progress" ? "In Progress" : b.status}
                     </Badge>
                   </td>
                   <td>₹{b.price}</td>
@@ -111,13 +116,27 @@ const MyBookings = () => {
                         Cancel
                       </Button>
                     )}
+                    {b.status === "in-progress" && (
+                      <span className="body-muted" style={{fontSize: '14px'}}>Service Ongoing</span>
+                    )}
                     {b.status === "completed" && (
-                      <Button
-                        variant="ghost"
-                        style={{ padding: "4px 8px", fontSize: "14px" }}
-                      >
-                        Review
-                      </Button>
+                      <div style={{display: 'flex', gap: '8px'}}>
+                        <Button variant="primary" style={{ padding: "4px 8px", fontSize: "14px" }} onClick={() => {
+                          initiatePayment({
+                            amount: b.price * 0.9, // Mocking remaining 90%
+                            description: `Remaining Balance for ${b.service.name}`,
+                            onSuccess: (txId) => alert(`Payment successful! ID: ${txId}`)
+                          });
+                        }}>
+                          Pay Balance
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          style={{ padding: "4px 8px", fontSize: "14px" }}
+                        >
+                          Review
+                        </Button>
+                      </div>
                     )}
                   </td>
                 </tr>

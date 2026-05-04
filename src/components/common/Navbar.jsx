@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
+import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-  const userRole = localStorage.getItem('userRole');
+  const { userRole, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,10 +49,9 @@ const Navbar = () => {
               <div className="avatar" style={{width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-dark-forest)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '500', border: '1px solid var(--color-neon-green)'}}>
                 {userRole === 'provider' ? 'P' : 'C'}
               </div>
-              <Button variant="ghost" onClick={() => {
-                localStorage.removeItem('userRole');
+              <Button variant="ghost" onClick={async () => {
+                await logout();
                 navigate('/');
-                window.location.reload();
               }}>Log out</Button>
             </div>
           ) : (

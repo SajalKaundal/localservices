@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiTool, FiClipboard, FiDollarSign, FiSearch, FiHome, FiCalendar, FiMessageSquare, FiUser, FiCreditCard } from 'react-icons/fi';
+import { FiGrid, FiTool, FiClipboard, FiDollarSign, FiSearch, FiHome, FiCalendar, FiMessageSquare, FiUser, FiCreditCard, FiMenu, FiX } from 'react-icons/fi';
 import Button from '../components/ui/Button';
+import { useAuth } from '../context/AuthContext';
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const isProvider = location.pathname.includes('/provider');
   
   const navLinks = isProvider ? [
@@ -23,20 +28,28 @@ const DashboardLayout = () => {
     { name: 'Profile', path: '/consumer/profile', icon: <FiUser /> },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
   return (
     <div className="dashboard-layout">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+      )}
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <Link to={isProvider ? '/provider/dashboard' : '/'} className="navbar-brand">
             <span className="brand-text">Local</span>
             <span className="brand-accent">Serve</span>
           </Link>
+          <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>
+            <FiX />
+          </button>
         </div>
         
         <nav className="sidebar-nav">
@@ -45,6 +58,7 @@ const DashboardLayout = () => {
               key={link.name} 
               to={link.path} 
               className={`sidebar-link ${location.pathname === link.path ? 'active' : ''}`}
+              onClick={() => setIsSidebarOpen(false)}
             >
               <span className="sidebar-icon">{link.icon}</span>
               {link.name}
@@ -62,9 +76,14 @@ const DashboardLayout = () => {
       {/* Main Content */}
       <main className="dashboard-main">
         <header className="dashboard-header">
-          <h2 className="heading-4">
-            {navLinks.find(l => l.path === location.pathname)?.name || 'Dashboard'}
-          </h2>
+          <div className="header-left">
+            <button className="mobile-menu-btn" onClick={toggleSidebar}>
+              <FiMenu />
+            </button>
+            <h2 className="heading-4">
+              {navLinks.find(l => l.path === location.pathname)?.name || 'Dashboard'}
+            </h2>
+          </div>
           <div className="user-profile">
             <div className="avatar">U</div>
           </div>

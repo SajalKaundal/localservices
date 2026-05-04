@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import './ProviderPages.css';
 
 const pendingRequests = [
   { id: 'REQ-502', service: 'AC Repair', customer: 'Sarah J.', time: '2 hours ago', location: 'Downtown', date: 'Oct 26, 10:00 AM' },
@@ -16,7 +17,7 @@ const BookingRequests = () => {
 
       <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
         {pendingRequests.map(req => (
-          <Card key={req.id} elevation="medium" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <Card key={req.id} elevation="medium" className="booking-request-card">
             <div>
               <div style={{display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px'}}>
                 <h4 className="heading-5">{req.service}</h4>
@@ -27,7 +28,7 @@ const BookingRequests = () => {
               <p className="body-muted" style={{fontSize: '12px', marginTop: '8px'}}>Received {req.time}</p>
             </div>
             
-            <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+            <div className="booking-request-actions">
               <Button variant="primary">Accept Request</Button>
               <Button variant="ghost" style={{color: '#EF4444'}}>Decline</Button>
             </div>

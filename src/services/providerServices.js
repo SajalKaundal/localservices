@@ -16,21 +16,21 @@ const fetchServices = async (_id) => {
   }
 };
 
-const fetchService = async (pid,sid) => {
-  try{
-    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`)
-    const data = await response.json()
+const fetchService = async (pid, sid) => {
+  try {
+    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`);
+    const data = await response.json();
 
-    if(!data.success){
-      throw new Error("Fetching Service Failed")
+    if (!data.success) {
+      throw new Error("Fetching Service Failed");
     }
 
-    return data.service
-  }catch(err){
-    console.error(err.message)
-    throw err
+    return data.service;
+  } catch (err) {
+    console.error(err.message);
+    throw err;
   }
-}
+};
 
 const addService = async (pid, service) => {
   try {
@@ -59,7 +59,7 @@ const addService = async (pid, service) => {
   }
 };
 
-const deleteService = async (pid,sid) => {
+const deleteService = async (pid, sid) => {
   try {
     const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`, {
       method: "DELETE",
@@ -71,25 +71,45 @@ const deleteService = async (pid,sid) => {
     return data.deletedService;
   } catch (err) {
     console.error(err.message);
-    throw err
+    throw err;
   }
 };
 
-const updateService = async (pid,sid,service) => {
-  try{
-    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`,{
-      method:"PATCH",
-      headers:{
-        "Content-Type":"application/json"
+const updateService = async (pid, sid, service) => {
+  try {
+    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify(service)
-    })
-    const data = await response.json()
+      body: JSON.stringify(service),
+    });
+    const data = await response.json();
     return data.service;
-  }catch(err){
-    console.error(err.message)
-    throw err
+  } catch (err) {
+    console.error(err.message);
+    throw err;
   }
-}
+};
 
-export { fetchServices, addService, deleteService, fetchService,updateService };
+const fetchProviderBookings = async (pid) => {
+  try {
+    const response = await fetch(`${API_URL}/provider/bookings/${pid}`);
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error("Unable to fetch Provder bookings");
+    }
+
+    return data.bookings;
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+export {
+  fetchServices,
+  addService,
+  deleteService,
+  fetchService,
+  updateService,
+  fetchProviderBookings,
+};

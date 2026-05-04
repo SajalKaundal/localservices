@@ -6,6 +6,7 @@ import { FiZap, FiTool, FiTruck } from "react-icons/fi";
 import "./Dashboard.css";
 import { useEditable } from "@chakra-ui/react";
 import { fetchUserBookings } from "../../services/bookingServices";
+import { initiatePayment } from "../../utils/paymentUtils";
 
 // const upcomingBookings = [
 //   { id: 1, service: 'Deep Home Cleaning', provider: 'Fresh Home', date: 'Tomorrow, 10:00 AM', status: 'Confirmed' },
@@ -31,6 +32,23 @@ const ConsumerDashboard = () => {
       <div className="dashboard-grid">
         <div className="main-column">
           <section className="dashboard-section">
+            <h3 className="heading-5 section-header">Action Required</h3>
+            <Card elevation="medium" style={{marginBottom: '24px', border: '1px solid var(--color-neon-green)'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div>
+                  <h4 className="heading-6" style={{color: 'var(--color-neon-green)'}}>Payment Due</h4>
+                  <p className="body-muted" style={{marginTop: '4px'}}>AC Deep Cleaning • Completed on Oct 25</p>
+                </div>
+                <Button variant="primary" onClick={() => {
+                  initiatePayment({
+                    amount: 42.50,
+                    description: 'Remaining Balance for AC Deep Cleaning',
+                    onSuccess: (txId) => alert(`Payment successful! ID: ${txId}`)
+                  });
+                }}>Pay ₹42.50</Button>
+              </div>
+            </Card>
+
             <h3 className="heading-5 section-header">Upcoming Bookings</h3>
             <div className="bookings-list">
               {upComingBookings.length > 0 &&

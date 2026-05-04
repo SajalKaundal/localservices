@@ -8,16 +8,8 @@ import {
   createBooking,
   fetchServiceDetails,
 } from "../../services/bookingServices";
-
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+import { initiatePayment } from "../../utils/paymentUtils";
+import { createOrder } from "../../services/paymentServices";
 
 const BookingFlow = () => {
   const [searchParams] = useSearchParams();
@@ -35,12 +27,10 @@ const BookingFlow = () => {
   const [formData, setFormData] = useState({
     provider: providerId,
     service: "",
-    price: "",
     address: "",
     scheduledAt: "",
     timeSlot: "",
     notes: "",
-    transactionId: "",
   });
 
   const handleChange = (e) => {
@@ -67,50 +57,21 @@ const BookingFlow = () => {
       return;
     }
 
-    const res = await loadRazorpayScript();
-
-    if (!res) {
-      alert("Razorpay SDK failed to load.");
-      return;
-    }
-
-    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
-
-    if (!razorpayKey) {
-      alert("Missing Razorpay Key in .env");
-      return;
-    }
-
-    const amount = Math.round(formData.price * 100);
-
-    const options = {
-      key: razorpayKey,
-      amount,
-      currency: "INR",
-      name: "LocalServe",
+    const booking = await createBooking("69f3769965de75f0df8f8eac", formData);
+    console.log(booking)
+    const order = await createOrder({
+      bookingId: booking._id,
+      paymentType: "advance",
+    });
+    initiatePayment({
+      order,
       description: `Payment for ${selectedService.name}`,
-
-      handler: function (response) {
-        const transactionId = response.razorpay_payment_id;
-
+      onSuccess: (transactionId) => {
         alert(`Payment Successful! Payment ID: ${transactionId}`);
-
         handleSubmit(transactionId);
         navigate("/consumer/bookings");
       },
-
-      prefill: {
-        name: "Test User",
-        email: "test@example.com",
-      },
-
-      theme: {
-        color: "#36f4a4",
-      },
-    };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
+    });
   };
 
   // const handleNext = () => {
@@ -207,10 +168,6 @@ const BookingFlow = () => {
                       setFormData((prev) => ({
                         ...prev,
                         service: selected._id,
-                        price:
-                          selected.pricingType === "hourly"
-                            ? selected.basePrice
-                            : selected.basePrice * 0.1,
                       }));
 
                       setSelectedServiceId(e.target.value);
@@ -284,15 +241,41 @@ const BookingFlow = () => {
                     Date: <strong>{formData.scheduledAt}</strong>
                   </p>
 
-                  <hr />
+                  <hr
+                    style={{
+                      margin: "12px 0",
+                      borderColor: "var(--color-dark-card-border)",
+                    }}
+                  />
 
                   <div
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
+                      marginBottom: "8px",
                     }}
                   >
-                    <span>Booking Amount</span>
+                    <span className="body-muted">Total Estimated Cost</span>
+                    <span>
+                      ₹{selectedService.basePrice.toFixed(2)}
+                      {selectedService.pricingType === "hourly" ? " / hr" : ""}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    <span className="body-muted">
+                      Deposit Required (
+                      {selectedService.pricingType === "hourly"
+                        ? "1st Hour"
+                        : "10%"}
+                      )
+                    </span>
                     <span>
                       ₹
                       {selectedService.pricingType === "hourly"
@@ -300,7 +283,35 @@ const BookingFlow = () => {
                         : (selectedService.basePrice * 0.1).toFixed(2)}
                     </span>
                   </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: "16px",
+                      paddingTop: "16px",
+                      borderTop: "1px dashed var(--color-dark-card-border)",
+                    }}
+                  >
+                    <span style={{ fontWeight: 500 }}>Pay Now</span>
+                    <span
+                      className="heading-5"
+                      style={{ color: "var(--color-neon-green)" }}
+                    >
+                      ₹
+                      {selectedService.pricingType === "hourly"
+                        ? selectedService.basePrice.toFixed(2)
+                        : (selectedService.basePrice * 0.1).toFixed(2)}
+                    </span>
+                  </div>
                 </Card>
+                <p
+                  className="body-muted"
+                  style={{ fontSize: "12px", textAlign: "center" }}
+                >
+                  The remaining balance will be due after the service is
+                  completed.
+                </p>
               </div>
             )}
           </div>

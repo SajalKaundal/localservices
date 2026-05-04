@@ -66,3 +66,16 @@
 .action-card {
   background: radial-gradient(circle at top right, var(--color-forest) 0%, var(--color-deep-teal) 100%);
 }
+
+@media (max-width: 640px) {
+  .booking-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  
+  .booking-card .booking-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

@@ -2,11 +2,13 @@ import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import { initiatePayment } from '../../utils/paymentUtils';
+import './ConsumerPages.css';
 
 const BookingDetails = () => {
   return (
     <div className="consumer-page">
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+      <div className="booking-details-header">
         <h2 className="heading-3">Booking Details</h2>
         <Badge style={{backgroundColor: 'rgba(54, 244, 164, 0.2)', color: 'var(--color-neon-green)'}}>Confirmed</Badge>
       </div>
@@ -32,13 +34,14 @@ const BookingDetails = () => {
             </div>
             
             <div style={{position: 'relative'}}>
-              <div style={{position: 'absolute', left: '-22px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--color-void)', border: '2px solid var(--color-neon-green)'}}></div>
-              <p style={{color: 'var(--color-shade-30)'}}>Provider En Route</p>
+              <div style={{position: 'absolute', left: '-22px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--color-neon-green)'}}></div>
+              <p style={{fontWeight: '500'}}>Provider En Route</p>
+              <span className="body-muted" style={{fontSize: '12px'}}>Oct 25, 2026 - 9:45 AM</span>
             </div>
             
             <div style={{position: 'relative'}}>
-              <div style={{position: 'absolute', left: '-22px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--color-void)', border: '2px solid var(--color-shade-50)'}}></div>
-              <p style={{color: 'var(--color-shade-50)'}}>Service In Progress</p>
+              <div style={{position: 'absolute', left: '-22px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--color-void)', border: '2px solid var(--color-neon-green)'}}></div>
+              <p style={{color: 'var(--color-white)'}}>Service In Progress</p>
             </div>
             
             <div style={{position: 'relative'}}>
@@ -58,14 +61,26 @@ const BookingDetails = () => {
             <span className="body-muted">Platform Fee</span>
             <span>₹2.00</span>
           </div>
+          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: 'var(--color-neon-green)'}}>
+            <span>Initial Deposit (Paid)</span>
+            <span>- ₹4.50</span>
+          </div>
           <hr style={{margin: '12px 0', borderColor: 'var(--color-shade-70)'}} />
           <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <span style={{fontWeight: '500'}}>Total</span>
-            <span className="heading-5" style={{color: 'var(--color-neon-green)'}}>₹47.00</span>
+            <span style={{fontWeight: '500'}}>Remaining Balance</span>
+            <span className="heading-5" style={{color: 'var(--color-white)'}}>₹42.50</span>
           </div>
+          
+          <Button variant="primary" style={{width: '100%', marginTop: '24px'}} onClick={() => {
+            initiatePayment({
+              amount: 42.50,
+              description: 'Remaining Balance for AC Deep Cleaning',
+              onSuccess: (txId) => alert(`Payment successful! ID: ${txId}`)
+            });
+          }}>Pay Remaining Balance</Button>
         </Card>
         
-        <div style={{display: 'flex', gap: '16px'}}>
+        <div className="booking-details-actions">
           <Button variant="secondary" style={{flex: 1}}>Message Provider</Button>
           <Button variant="ghost" style={{color: '#EF4444'}}>Cancel Booking</Button>
         </div>

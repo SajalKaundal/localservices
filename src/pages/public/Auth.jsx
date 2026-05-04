@@ -3,8 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import { auth, googleProvider } from '../../config/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth';
+import { useAuth } from '../../context/AuthContext';
+import { resetPassword } from '../../services/authService';
 import './Auth.css';
 
 const Auth = () => {
@@ -32,10 +32,11 @@ const Auth = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
+  const { loginConsumer, loginProvider, signupConsumer, signupProvider, loginWithGoogle, mockLogin } = useAuth();
+
   const handleRoleChange = (selectedRole) => setRole(selectedRole);
 
   const performLoginRedirect = () => {
-    localStorage.setItem('userRole', role);
     if (role === 'provider') {
       navigate('/provider/dashboard');
     } else {
@@ -66,30 +67,32 @@ const Auth = () => {
     e.preventDefault();
     setError('');
     setMessage('');
-    
-    if (!auth) {
-      alert("Firebase not configured. Proceeding with mock action.");
-      performLoginRedirect();
-      return;
-    }
 
     try {
       if (isForgotPassword) {
-        await sendPasswordResetEmail(auth, email);
+        await resetPassword(email);
         setMessage('Password reset email sent! Check your inbox.');
       } else if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        if (role === 'provider') {
+          await loginProvider(email, password);
+        } else {
+          await loginConsumer(email, password);
+        }
         performLoginRedirect();
       } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCredential.user);
+        if (role === 'provider') {
+          await signupProvider(email, password, name);
+        } else {
+          await signupConsumer(email, password, name);
+        }
         alert('Account created! A verification link has been sent to your email.');
         performLoginRedirect();
       }
     } catch (err) {
       console.error(err);
-      if (err.message && err.message.includes('API_KEY')) {
+      if (err.message && (err.message.includes('API_KEY') || err.message.includes('Firebase not configured'))) {
          alert("Invalid Firebase config. Proceeding with mock login.");
+         mockLogin(role);
          performLoginRedirect();
       } else {
          setError(getHumanReadableError(err.code));
@@ -99,20 +102,15 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setError('');
-    
-    if (!auth) {
-      alert("Firebase not configured. Proceeding with mock Google login.");
-      performLoginRedirect();
-      return;
-    }
 
     try {
-      await signInWithPopup(auth, googleProvider);
+      await loginWithGoogle(role);
       performLoginRedirect();
     } catch (err) {
       console.error(err);
-      if (err.message && err.message.includes('API_KEY')) {
+      if (err.message && (err.message.includes('API_KEY') || err.message.includes('Firebase not configured'))) {
          alert("Invalid Firebase config. Proceeding with mock Google login.");
+         mockLogin(role);
          performLoginRedirect();
       } else {
          setError(getHumanReadableError(err.code));

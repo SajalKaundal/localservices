@@ -1,5 +1,3 @@
-import { body } from "framer-motion/client"
-import { SiD } from "react-icons/si"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -59,7 +57,7 @@ const createBooking = async (uid,booking)=>{
       throw new Error("Unable to Create a Booking")
     }
 
-    return data
+    return data.booking
   }catch(err){
     console.error(err.message)
     throw err
