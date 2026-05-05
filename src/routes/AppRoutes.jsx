@@ -27,6 +27,7 @@ import EditService from '../pages/provider/EditService';
 import ProviderEarnings from '../pages/provider/Earnings';
 import BookingRequests from '../pages/provider/BookingRequests';
 import MyJobs from '../pages/provider/MyJobs';
+import ProviderBookingDetails from '../pages/provider/BookingDetails';
 import ProviderProfile from '../pages/provider/Profile';
 import EditProviderProfile from '../pages/provider/EditProfile';
 
@@ -55,6 +56,8 @@ const AppRoutes = () => {
         <Route path="/consumer/dashboard" element={<ConsumerDashboard />} />
         <Route path="/consumer/bookings" element={<MyBookings />} />
         <Route path="/consumer/bookings/:id" element={<BookingDetails />} />
+        {/* Wait, the code in BookingFlow routes to /consumer/booking/:id. Let me adjust it to match. */}
+        <Route path="/consumer/booking/:id" element={<BookingDetails />} />
         <Route path="/consumer/messages" element={<Messaging />} />
         <Route path="/consumer/payments" element={<Payments />} />
         <Route path="/consumer/profile" element={<ConsumerProfile />} />
@@ -68,6 +71,7 @@ const AppRoutes = () => {
         <Route path="/provider/earnings" element={<ProviderEarnings />} />
         <Route path="/provider/requests" element={<BookingRequests />} />
         <Route path="/provider/jobs" element={<MyJobs />} />
+        <Route path="/provider/job/:id" element={<ProviderBookingDetails />} />
         <Route path="/provider/profile" element={<ProviderProfile />} />
         <Route path="/provider/profile/edit" element={<EditProviderProfile />} />
       </Route>

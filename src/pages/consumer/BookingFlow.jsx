@@ -9,8 +9,6 @@ import {
   createBooking,
   fetchServiceDetails,
 } from "../../services/bookingServices";
-import { initiatePayment } from "../../utils/paymentUtils";
-import { createOrder } from "../../services/paymentServices";
 
 const BookingFlow = () => {
   const [searchParams] = useSearchParams();
@@ -49,47 +47,31 @@ const BookingFlow = () => {
     }));
   };
 
-  const handleSubmit = async (transactionId) => {
-    const finalData = {
-      ...formData,
-      transactionId,
-    };
-    await createBooking("69f3769965de75f0df8f8eac", finalData);
-    console.log("Final Booking Data:", finalData);
-
-    // TODO: Call your backend API here
-  };
-
-  const handlePaymentAndBook = async () => {
+  const handleSendRequest = async () => {
     if (!selectedService) {
       alert("Please select a service");
       return;
     }
 
-    const booking = await createBooking("69f3769965de75f0df8f8eac", formData);
-    console.log(booking)
-    const order = await createOrder({
-      bookingId: booking._id,
-      paymentType: "advance",
-    });
-    initiatePayment({
-      order,
-      description: `Advance Payment for ${selectedService.name}`,
-      onSuccess: (transactionId) => {
-        alert(`Payment Successful! Payment ID: ${transactionId}`);
-        handleSubmit(transactionId);
-        navigate("/consumer/bookings");
-      },
-    });
+    try {
+      const finalData = {
+        ...formData,
+        status: "REQUESTED", // new state
+      };
+      
+      // If backend is ready, use this:
+      // const booking = await createBooking("69f3769965de75f0df8f8eac", finalData);
+      
+      console.log("Creating Request:", finalData);
+      
+      // Simulate successful request
+      alert("Request sent to provider! Awaiting their proposal.");
+      navigate("/consumer/booking/12345"); // Navigate to the new tracking hub
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send request.");
+    }
   };
-
-  // const handleNext = () => {
-  //   if (step < 3) {
-  //     setStep(step + 1);
-  //   } else {
-  //     handlePaymentAndBook();
-  //   }
-  // };
 
   useEffect(() => {
     const getServices = async () => {
@@ -115,7 +97,7 @@ const BookingFlow = () => {
         style={{ maxWidth: "600px", margin: "0 auto" }}
       >
         <h2 className="heading-3" style={{ marginBottom: "24px" }}>
-          Book a Service
+          Create Booking Request
         </h2>
         <div className="wizard-progress">
           <div className={`progress-step ${step >= 1 ? "active" : ""}`}>
@@ -125,7 +107,7 @@ const BookingFlow = () => {
             2. Schedule
           </div>
           <div className={`progress-step ${step >= 3 ? "active" : ""}`}>
-            3. Confirm & Pay
+            3. Review & Request
           </div>
         </div>
         <form
@@ -140,13 +122,9 @@ const BookingFlow = () => {
               }
               setStep(2);
             } else if (step === 2) {
-              if (!formData.scheduledAt || !formData.timeSlot) {
-                alert("Please select date and time");
-                return;
-              }
               setStep(3);
             } else if (step === 3) {
-              handlePaymentAndBook();
+              handleSendRequest();
             }
           }}
         >
@@ -204,7 +182,7 @@ const BookingFlow = () => {
                 />
 
                 <Input
-                  label="Special Instructions"
+                  label="Special Instructions (Optional)"
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
@@ -215,23 +193,24 @@ const BookingFlow = () => {
             {step === 2 && (
               <div className="step-content">
                 <h4 className="heading-5" style={{ marginBottom: "16px" }}>
-                  Select Date & Time
+                  Preferred Date & Time
                 </h4>
+                <p className="body-muted" style={{marginBottom: "16px", fontSize: "14px"}}>
+                  These are preferred times. The provider will confirm or propose a new time slot based on availability.
+                </p>
 
                 <Input
                   type="date"
-                  label="Preferred Date *"
+                  label="Preferred Date (Optional)"
                   name="scheduledAt"
                   onChange={handleChange}
-                  required
                 />
 
                 <Input
                   type="time"
-                  label="Preferred Time *"
+                  label="Preferred Time (Optional)"
                   name="timeSlot"
                   onChange={handleChange}
-                  required
                 />
               </div>
             )}
@@ -239,7 +218,7 @@ const BookingFlow = () => {
             {step === 3 && selectedService && (
               <div className="step-content">
                 <h4 className="heading-5" style={{ marginBottom: "16px" }}>
-                  Review Booking
+                  Review Request
                 </h4>
 
                 <Card elevation="subtle" style={{ marginBottom: "16px" }}>
@@ -247,7 +226,10 @@ const BookingFlow = () => {
                     Service: <strong>{selectedService.name}</strong>
                   </p>
                   <p>
-                    Date: <strong>{formData.scheduledAt}</strong>
+                    Preferred Date: <strong>{formData.scheduledAt || "Flexible"}</strong>
+                  </p>
+                  <p>
+                    Preferred Time: <strong>{formData.timeSlot || "Flexible"}</strong>
                   </p>
 
                   <hr
@@ -264,63 +246,24 @@ const BookingFlow = () => {
                       marginBottom: "8px",
                     }}
                   >
-                    <span className="body-muted">Total Estimated Cost</span>
+                    <span className="body-muted">Base Rate</span>
                     <span>
                       ₹{selectedService.basePrice.toFixed(2)}
                       {selectedService.pricingType === "hourly" ? " / hr" : ""}
                     </span>
                   </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <span className="body-muted">
-                      Deposit Required (
-                      {selectedService.pricingType === "hourly"
-                        ? "1st Hour"
-                        : "10%"}
-                      )
-                    </span>
-                    <span>
-                      ₹
-                      {selectedService.pricingType === "hourly"
-                        ? selectedService.basePrice.toFixed(2)
-                        : (selectedService.basePrice * 0.1).toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
+                  
+                  <div style={{
                       marginTop: "16px",
                       paddingTop: "16px",
                       borderTop: "1px dashed var(--color-dark-card-border)",
-                    }}
-                  >
-                    <span style={{ fontWeight: 500 }}>Pay Now</span>
-                    <span
-                      className="heading-5"
-                      style={{ color: "var(--color-neon-green)" }}
-                    >
-                      ₹
-                      {selectedService.pricingType === "hourly"
-                        ? selectedService.basePrice.toFixed(2)
-                        : (selectedService.basePrice * 0.1).toFixed(2)}
-                    </span>
+                    }}>
+                    <p className="body-muted" style={{fontSize: "13px"}}>
+                      <strong style={{color: "var(--color-white)"}}>Next Step:</strong> You will receive a final price and time proposal from the provider. You will only pay the advance deposit after accepting their proposal.
+                    </p>
                   </div>
+
                 </Card>
-                <p
-                  className="body-muted"
-                  style={{ fontSize: "12px", textAlign: "center" }}
-                >
-                  The remaining balance will be due after the service is
-                  completed.
-                </p>
               </div>
             )}
           </div>
@@ -342,7 +285,7 @@ const BookingFlow = () => {
             )}
 
             <Button type="submit" variant="primary">
-              {step === 3 ? "Pay & Book" : "Continue"}
+              {step === 3 ? "Send Request" : "Continue"}
             </Button>
           </div>
         </form>

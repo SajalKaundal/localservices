@@ -1,55 +1,44 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import { FiZap, FiTool, FiTruck } from "react-icons/fi";
 import "./Dashboard.css";
 import { fetchUserBookings } from "../../services/bookingServices";
-import { initiatePayment } from "../../utils/paymentUtils";
-import { createOrder } from "../../services/paymentServices";
-
-// const upcomingBookings = [
-//   { id: 1, service: 'Deep Home Cleaning', provider: 'Fresh Home', date: 'Tomorrow, 10:00 AM', status: 'Confirmed' },
-//   { id: 2, service: 'AC Repair', provider: 'CoolBreeze AC', date: 'Oct 15, 2:00 PM', status: 'Pending' },
-// ];
 
 const ConsumerDashboard = () => {
   const [upComingBookings, setUpComingsBookings] = useState([]);
   const [pendingPayment, setPendingPayment] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const navigate = useNavigate();
 
-  const handlePendingPayment = async (booking) => {
-    try {
-      const order = await createOrder({ bookingId:booking._id, paymentType: "remaining" });
-      initiatePayment({
-        order,
-        description: `Remaining Payment for ${booking.service.name}`,
-        onSuccess: (txId) => {alert(`Payment successful! ID: ${txId}`)
-      setRefresh((prev)=>!prev)},
-      });
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
   useEffect(() => {
     const getUpComingBookings = async () => {
-      const upComingBookings = await fetchUserBookings(
-        "69f3769965de75f0df8f8eac",
-        true,
-      );
-      setUpComingsBookings(upComingBookings);
+      try {
+        const upComingBookings = await fetchUserBookings(
+          "69f3769965de75f0df8f8eac",
+          true,
+        );
+        setUpComingsBookings(upComingBookings);
+      } catch (e) {
+        console.error(e);
+      }
     };
     const getPendingPayment = async () => {
-      const pendingPayment = await fetchUserBookings(
-        "69f3769965de75f0df8f8eac",
-        false,
-        true,
-      );
-      setPendingPayment(pendingPayment);
+      try {
+        const pendingPayment = await fetchUserBookings(
+          "69f3769965de75f0df8f8eac",
+          false,
+          true,
+        );
+        setPendingPayment(pendingPayment);
+      } catch (e) {
+        console.error(e);
+      }
     };
     getPendingPayment();
     getUpComingBookings();
-  }, [refresh]);
+  }, []);
 
   return (
     <div className="consumer-dashboard">
@@ -66,7 +55,7 @@ const ConsumerDashboard = () => {
                     elevation="medium"
                     style={{
                       marginBottom: "24px",
-                      border: "1px solid var(--color-neon-green)",
+                      border: "1px solid var(--color-shade-70)",
                     }}
                   >
                     <div
@@ -77,22 +66,19 @@ const ConsumerDashboard = () => {
                       }}
                     >
                       <div>
-                        <h4
-                          className="heading-6"
-                          style={{ color: "var(--color-neon-green)" }}
-                        >
+                        <h4 className="heading-6">
                           Payment Due
                         </h4>
                         <p className="body-muted" style={{ marginTop: "4px" }}>
                           {p.service.name} • Completed on{" "}
-                          {p.updatedAt.slice(0, 10)}
+                          {p.updatedAt?.slice(0, 10)}
                         </p>
                       </div>
                       <Button
                         variant="primary"
-                        onClick={() => handlePendingPayment(p)}
+                        onClick={() => navigate(`/consumer/booking/${p._id}`)}
                       >
-                        Pay ₹{p.remainingAmount}
+                        Manage Booking
                       </Button>
                     </div>
                   </Card>
@@ -126,7 +112,7 @@ const ConsumerDashboard = () => {
                         <h4 className="heading-6">{booking.service.name}</h4>
                         <p className="body-muted" style={{ marginTop: "4px" }}>
                           {booking.provider.name} •{" "}
-                          {booking.scheduledAt.slice(0, 10)} ,{" "}
+                          {booking.scheduledAt?.slice(0, 10)} ,{" "}
                           {booking.timeSlot}
                         </p>
                       </div>
@@ -139,40 +125,10 @@ const ConsumerDashboard = () => {
                           justifyContent: "flex-end",
                         }}
                       >
-                        <Badge
-                          className={
-                            ["confirmed", "completed"].includes(
-                              booking.bookingStatus?.toLowerCase(),
-                            )
-                              ? "badge-success"
-                              : ["cancelled"].includes(
-                                    (
-                                      booking.bookingStatus || booking.status
-                                    )?.toLowerCase(),
-                                  )
-                                ? "badge-danger"
-                                : ["in-progress"].includes(
-                                      (
-                                        booking.bookingStatus || booking.status
-                                      )?.toLowerCase(),
-                                    )
-                                  ? "badge-info"
-                                  : "badge-warning"
-                          }
-                        >
+                        <Badge>
                           {booking.bookingStatus}
                         </Badge>
-                        <Badge
-                          className={
-                            booking.paymentStatus === "paid"
-                              ? "badge-success"
-                              : booking.paymentStatus === "refunded"
-                                ? "badge-danger"
-                                : booking.paymentStatus === "partial"
-                                  ? "badge-info"
-                                  : "badge-warning"
-                          }
-                        >
+                        <Badge>
                           {booking.paymentStatus}
                         </Badge>
                       </div>
@@ -186,7 +142,7 @@ const ConsumerDashboard = () => {
                         backgroundColor: "var(--color-forest)",
                         padding: "12px",
                         borderRadius: "8px",
-                        border: "1px solid var(--color-deep-teal)",
+                        border: "1px solid var(--color-shade-70)",
                         width: "100%",
                       }}
                     >
@@ -234,14 +190,19 @@ const ConsumerDashboard = () => {
                         >
                           Balance Due
                         </span>
-                        <span
-                          className="body-strong"
-                          style={{ color: "var(--color-neon-green)" }}
-                        >
+                        <span className="body-strong">
                           ₹{booking.remainingAmount || 0}
                         </span>
                       </div>
                     </div>
+                    
+                    <Button 
+                      variant="secondary" 
+                      style={{width: '100%', marginTop: '8px'}}
+                      onClick={() => navigate(`/consumer/booking/${booking._id}`)}
+                    >
+                      Track Job Progress
+                    </Button>
                   </Card>
                 ))}
             </div>
