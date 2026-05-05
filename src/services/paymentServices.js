@@ -12,6 +12,7 @@ const createOrder = async (order)=> {
     )
     const data = await response.json()
     if(!data.success){
+      console.log(order)
       throw new Error("Unable to process the transaction")
     }
     return data.order

@@ -1,6 +1,6 @@
 .btn {
   border-radius: 9999px; /* Pill shape is non-negotiable */
-  padding: 12px 26px 12px 16px;
+  padding: 12px 24px;
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 500;

@@ -42,6 +42,18 @@
   border: 1px solid #FCD34D;
 }
 
+.badge-danger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #F87171;
+  border: 1px solid #F87171;
+}
+
+.badge-info {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60A5FA;
+  border: 1px solid #60A5FA;
+}
+
 .recommendations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

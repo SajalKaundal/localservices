@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
@@ -10,6 +11,7 @@ import { fetchProvider } from "../../services/publicServices";
 const ProviderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userRole } = useAuth();
   const [provider, setProvider] = useState([]);
   useEffect(() => {
     const getProvider = async () => {
@@ -95,7 +97,14 @@ const ProviderDetail = () => {
                         <span className="heading-5">{`₹${s.basePrice}${s.pricingType==="hourly"?"/hr":""}`}</span>
                         <Button
                           variant="secondary"
-                          onClick={() => navigate(`/consumer/book?serviceId=${s._id}&providerId=${provider._id}`)}
+                          onClick={() => {
+                            if (!userRole) {
+                              alert("Please login to book a service");
+                              navigate("/auth");
+                            } else {
+                              navigate(`/consumer/book?serviceId=${s._id}&providerId=${provider._id}`);
+                            }
+                          }}
                         >
                           Book
                         </Button>
@@ -140,7 +149,14 @@ const ProviderDetail = () => {
               <Button
                 variant="primary"
                 style={{ width: "100%" }}
-                onClick={() => navigate(`/consumer/book?providerId=${provider._id}`)}
+                onClick={() => {
+                  if (!userRole) {
+                    alert("Please login to book a service");
+                    navigate("/auth");
+                  } else {
+                    navigate(`/consumer/book?providerId=${provider._id}`);
+                  }
+                }}
               >
                 Start Booking
               </Button>

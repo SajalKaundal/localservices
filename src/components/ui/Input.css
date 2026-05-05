@@ -20,6 +20,7 @@
   font-family: var(--font-body);
   font-size: 16px;
   transition: border-color 200ms ease;
+  width: 100%;
 }
 
 .input-field::placeholder {

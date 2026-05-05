@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
@@ -17,6 +18,14 @@ const BookingFlow = () => {
   const providerId = searchParams.get("providerId");
 
   const navigate = useNavigate();
+  const { userRole } = useAuth();
+
+  useEffect(() => {
+    if (!userRole) {
+      alert("Please login to access the booking flow");
+      navigate("/auth");
+    }
+  }, [userRole, navigate]);
 
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
@@ -65,7 +74,7 @@ const BookingFlow = () => {
     });
     initiatePayment({
       order,
-      description: `Payment for ${selectedService.name}`,
+      description: `Advance Payment for ${selectedService.name}`,
       onSuccess: (transactionId) => {
         alert(`Payment Successful! Payment ID: ${transactionId}`);
         handleSubmit(transactionId);
