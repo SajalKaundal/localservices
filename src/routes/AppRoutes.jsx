@@ -18,6 +18,7 @@ import Messaging from '../pages/consumer/Messaging';
 import Payments from '../pages/consumer/Payments';
 import ConsumerProfile from '../pages/consumer/Profile';
 import EditConsumerProfile from '../pages/consumer/EditProfile';
+import Requests from '../pages/consumer/Requests';
 
 import ProviderDashboard from '../pages/provider/Dashboard';
 import ProviderOnboarding from '../pages/provider/Onboarding';
@@ -62,6 +63,7 @@ const AppRoutes = () => {
         <Route path="/consumer/payments" element={<Payments />} />
         <Route path="/consumer/profile" element={<ConsumerProfile />} />
         <Route path="/consumer/profile/edit" element={<EditConsumerProfile />} />
+        <Route path="/consumer/requests" element={<Requests />} />
         
         <Route path="/provider/dashboard" element={<ProviderDashboard />} />
         <Route path="/provider/onboarding" element={<ProviderOnboarding />} />

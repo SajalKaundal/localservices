@@ -22,6 +22,7 @@ const DashboardLayout = () => {
   ] : [
     { name: 'Home / Search', path: '/', icon: <FiSearch /> },
     { name: 'Dashboard', path: '/consumer/dashboard', icon: <FiHome /> },
+    { name: 'My Requests', path: '/consumer/requests', icon: <FiClipboard /> },
     { name: 'My Bookings', path: '/consumer/bookings', icon: <FiCalendar /> },
     { name: 'Messages', path: '/consumer/messages', icon: <FiMessageSquare /> },
     { name: 'Payments', path: '/consumer/payments', icon: <FiCreditCard /> },

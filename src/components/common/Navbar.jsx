@@ -26,7 +26,7 @@ const Navbar = () => {
         </Link>
         
         <div className="navbar-links">
-          {userRole === 'consumer' && (
+          {userRole === 'user' && (
             <>
               <Link to="/consumer/dashboard" className="nav-link" style={{color: 'var(--color-neon-green)'}}>My Dashboard</Link>
               <Link to="/consumer/bookings" className="nav-link">My Bookings</Link>

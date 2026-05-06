@@ -11,7 +11,7 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [role, setRole] = useState(searchParams.get('role') === 'provider' ? 'provider' : 'consumer');
+  const [role, setRole] = useState(searchParams.get('role') === 'provider' ? 'provider' : 'user');
   const navigate = useNavigate();
 
   const toggleAuthMode = () => {

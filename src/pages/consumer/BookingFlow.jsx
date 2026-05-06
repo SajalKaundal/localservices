@@ -6,9 +6,9 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import "./ConsumerPages.css";
 import {
-  createBooking,
   fetchServiceDetails,
 } from "../../services/bookingServices";
+import { createRequest } from "../../services/requestService";
 
 const BookingFlow = () => {
   const [searchParams] = useSearchParams();
@@ -35,8 +35,8 @@ const BookingFlow = () => {
     provider: providerId,
     service: "",
     address: "",
-    scheduledAt: "",
-    timeSlot: "",
+    preferredDate: "",
+    preferredTime: "",
     notes: "",
   });
 
@@ -54,19 +54,25 @@ const BookingFlow = () => {
     }
 
     try {
+
+      const startTime = new Date(
+        `${formData.preferredDate}T${formData.preferredTime}:00`,
+      ).toISOString();
+
       const finalData = {
-        ...formData,
-        status: "REQUESTED", // new state
+        userId: "69f3769965de75f0df8f8eac",
+        serviceId: formData.service,
+        providerId: formData.provider,
+        address: formData.address,
+        description: formData.notes,
+        startTime,
       };
-      
-      // If backend is ready, use this:
-      // const booking = await createBooking("69f3769965de75f0df8f8eac", finalData);
-      
-      console.log("Creating Request:", finalData);
-      
-      // Simulate successful request
-      alert("Request sent to provider! Awaiting their proposal.");
-      navigate("/consumer/booking/12345"); // Navigate to the new tracking hub
+
+       const data=await createRequest(finalData)
+      if(data){
+        alert("Request sent to provider! Awaiting their proposal.");
+      }
+      navigate("/consumer/requests"); // Navigate to the new requests hub
     } catch (error) {
       console.error(error);
       alert("Failed to send request.");
@@ -82,9 +88,9 @@ const BookingFlow = () => {
         console.error(err.message);
       }
     };
-
+    console.log(formData);
     getServices();
-  }, [serviceId, providerId]);
+  }, [serviceId, providerId, formData]);
 
   return (
     <div
@@ -195,21 +201,25 @@ const BookingFlow = () => {
                 <h4 className="heading-5" style={{ marginBottom: "16px" }}>
                   Preferred Date & Time
                 </h4>
-                <p className="body-muted" style={{marginBottom: "16px", fontSize: "14px"}}>
-                  These are preferred times. The provider will confirm or propose a new time slot based on availability.
+                <p
+                  className="body-muted"
+                  style={{ marginBottom: "16px", fontSize: "14px" }}
+                >
+                  These are preferred times. The provider will confirm or
+                  propose a new time slot based on availability.
                 </p>
 
                 <Input
                   type="date"
                   label="Preferred Date (Optional)"
-                  name="scheduledAt"
+                  name="preferredDate"
                   onChange={handleChange}
                 />
 
                 <Input
                   type="time"
                   label="Preferred Time (Optional)"
-                  name="timeSlot"
+                  name="preferredTime"
                   onChange={handleChange}
                 />
               </div>
@@ -226,10 +236,12 @@ const BookingFlow = () => {
                     Service: <strong>{selectedService.name}</strong>
                   </p>
                   <p>
-                    Preferred Date: <strong>{formData.scheduledAt || "Flexible"}</strong>
+                    Preferred Date:{" "}
+                    <strong>{formData.scheduledAt || "Flexible"}</strong>
                   </p>
                   <p>
-                    Preferred Time: <strong>{formData.timeSlot || "Flexible"}</strong>
+                    Preferred Time:{" "}
+                    <strong>{formData.timeSlot || "Flexible"}</strong>
                   </p>
 
                   <hr
@@ -252,17 +264,23 @@ const BookingFlow = () => {
                       {selectedService.pricingType === "hourly" ? " / hr" : ""}
                     </span>
                   </div>
-                  
-                  <div style={{
+
+                  <div
+                    style={{
                       marginTop: "16px",
                       paddingTop: "16px",
                       borderTop: "1px dashed var(--color-dark-card-border)",
-                    }}>
-                    <p className="body-muted" style={{fontSize: "13px"}}>
-                      <strong style={{color: "var(--color-white)"}}>Next Step:</strong> You will receive a final price and time proposal from the provider. You will only pay the advance deposit after accepting their proposal.
+                    }}
+                  >
+                    <p className="body-muted" style={{ fontSize: "13px" }}>
+                      <strong style={{ color: "var(--color-white)" }}>
+                        Next Step:
+                      </strong>{" "}
+                      You will receive a final price and time proposal from the
+                      provider. You will only pay the advance deposit after
+                      accepting their proposal.
                     </p>
                   </div>
-
                 </Card>
               </div>
             )}

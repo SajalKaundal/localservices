@@ -6,10 +6,12 @@ import Button from "../../components/ui/Button";
 import { FiZap, FiTool, FiTruck } from "react-icons/fi";
 import "./Dashboard.css";
 import { fetchUserBookings } from "../../services/bookingServices";
+import { fetchUserRequests } from "../../services/requestService";
 
 const ConsumerDashboard = () => {
   const [upComingBookings, setUpComingsBookings] = useState([]);
   const [pendingPayment, setPendingPayment] = useState([]);
+  const [actionRequiredRequests, setActionRequiredRequests] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,8 +38,25 @@ const ConsumerDashboard = () => {
         console.error(e);
       }
     };
+    const getActionRequiredRequests = async () => {
+      try {
+        // Mocking for now as we don't have real data yet
+        const requests = [
+          {
+            _id: "req2",
+            service: { name: "AC Maintenance" },
+            status: "Action Required",
+            provider: { name: "Cooling Experts" }
+          }
+        ];
+        setActionRequiredRequests(requests);
+      } catch (e) {
+        console.error(e);
+      }
+    };
     getPendingPayment();
     getUpComingBookings();
+    getActionRequiredRequests();
   }, []);
 
   return (
@@ -45,9 +64,44 @@ const ConsumerDashboard = () => {
       <div className="dashboard-grid">
         <div className="main-column">
           <section className="dashboard-section">
-            {pendingPayment.length > 0 && (
+            {pendingPayment.length > 0 || actionRequiredRequests.length > 0 ? (
               <>
                 <h3 className="heading-5 section-header">Action Required</h3>
+
+                {actionRequiredRequests.map((req) => (
+                  <Card
+                    key={req._id}
+                    elevation="medium"
+                    style={{
+                      marginBottom: "24px",
+                      border: "1px solid var(--color-neon-green)",
+                      background: "rgba(54, 244, 164, 0.05)"
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div>
+                        <h4 className="heading-6" style={{color: "var(--color-neon-green)"}}>
+                          Proposal Received
+                        </h4>
+                        <p className="body-muted" style={{ marginTop: "4px" }}>
+                          {req.service.name} • From {req.provider.name}
+                        </p>
+                      </div>
+                      <Button
+                        variant="primary"
+                        onClick={() => navigate(`/consumer/requests`)}
+                      >
+                        Respond Now
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
 
                 {pendingPayment.map((p) => (
                   <Card
@@ -84,7 +138,7 @@ const ConsumerDashboard = () => {
                   </Card>
                 ))}
               </>
-            )}
+            ) : null}
 
             <h3 className="heading-5 section-header">Upcoming Bookings</h3>
             <div className="bookings-list">
