@@ -1,11 +1,15 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { getToken } from "../utils/authHelper";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const createRequest = async (request) => {
   try {
+    const token = await getToken();
     const response = await fetch(`${API_URL}/requests/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(request),
     });
@@ -21,9 +25,15 @@ export const createRequest = async (request) => {
   }
 };
 
-export const fetchUserRequests = async (userId) => {
+export const fetchRequests = async () => {
   try {
-    const response = await fetch(`${API_URL}/requests/${userId}`);
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/requests/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await response.json();
     if (!data.success) {
       throw new Error("Failed to fetch requests");
@@ -55,3 +65,27 @@ export const updateRequestStatus = async (requestId, updateData) => {
     throw err;
   }
 };
+
+export const sendTextMessage = async (requestId, text) => {
+  try{
+    const token = await getToken()
+     const response = await fetch(`${API_URL}/requests/send-text`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body:JSON.stringify({requestId,text})
+     })
+     const data = await response.json()
+     if(!data.success){
+      throw new Error("Message not sent")
+     }
+     return data.data
+  }catch(err){
+    console.error(err.message)
+    throw err
+  }
+
+}
+

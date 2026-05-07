@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button";
 import { FiZap, FiTool, FiTruck } from "react-icons/fi";
 import "./Dashboard.css";
 import { fetchUserBookings } from "../../services/bookingServices";
-import { fetchUserRequests } from "../../services/requestService";
+import { fetchRequests } from "../../services/requestService";
 
 const ConsumerDashboard = () => {
   const [upComingBookings, setUpComingsBookings] = useState([]);

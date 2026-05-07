@@ -13,10 +13,11 @@ const MyJobs = () => {
   useEffect(() => {
     const getBookings = async () => {
       try {
-        const bookings = await fetchProviderBookings(
+        const bookingsData = await fetchProviderBookings(
           "69f36e3d65de75f0df8f8e7d",
         );
-        setBookings(bookings);
+        const filteredBookings = bookingsData.filter(b => b.status !== "pending" && b.status !== "negotiating");
+        setBookings(filteredBookings);
       } catch (err) {
         console.error(err.message);
       }
@@ -69,15 +70,6 @@ const MyJobs = () => {
                         }}
                       >
                         In Progress
-                      </Badge>
-                    ) : b.status === "pending" ? (
-                      <Badge
-                        style={{
-                          backgroundColor: "rgba(244, 67, 54, 0.2)",
-                          color: "rgb(244, 67, 54)",
-                        }}
-                      >
-                        Pending
                       </Badge>
                     ) : (
                       <Badge

@@ -154,7 +154,7 @@ const BookingDetails = () => {
             {bookingState === 'CONFIRMED' && (
               <div style={{marginTop: '24px', display: 'flex', gap: '12px'}}>
                 <Button variant="ghost" style={{flex: 1}}>Contact Provider</Button>
-                <Button variant="ghost" style={{flex: 1}} style={{color: '#EF4444'}}>Cancel Booking</Button>
+                <Button variant="ghost" style={{flex: 1,color: '#EF4444'}}>Cancel Booking</Button>
               </div>
             )}
           </Card>

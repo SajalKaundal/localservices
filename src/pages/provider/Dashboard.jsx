@@ -4,7 +4,7 @@ import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { fetchProviderBookings } from "../../services/providerServices";
-
+import { fetchRequests } from "../../services/requestService";
 // Reusing consumer dashboard CSS for grid structure
 import "../consumer/Dashboard.css";
 
@@ -14,35 +14,32 @@ const ProviderDashboard = () => {
   const [upcomingJobs, setUpcomingJobs] = useState([]);
 
   useEffect(() => {
+    const getRequests = async () => {
+      const requests = await fetchRequests();
+      setNewRequests(requests);
+      // setLoading(false);
+    };
     const getBookings = async () => {
       try {
         const bookings = await fetchProviderBookings(
           "69f36e3d65de75f0df8f8e7d",
         );
 
-        const requests = bookings.filter(
-          (b) =>
-            b.bookingStatus === "created" ||
-            b.bookingStatus === "requested" ||
-            (!b.bookingStatus && b.status === "pending"),
-        );
         const upcoming = bookings.filter(
           (b) =>
             b.bookingStatus === "confirmed" ||
-            b.bookingStatus === "in-progress" ||
-            (!b.bookingStatus &&
-              (b.status === "confirmed" || b.status === "in-progress")),
+            b.bookingStatus === "in-progress"
         );
-
-        setNewRequests(requests);
         setUpcomingJobs(upcoming);
       } catch (err) {
         console.error(err.message);
       }
     };
+    getRequests();
     getBookings();
   }, []);
-
+  
+  console.log(newRequests)
   return (
     <div className="provider-dashboard">
       <div className="dashboard-grid">
@@ -116,11 +113,11 @@ const ProviderDashboard = () => {
                           marginBottom: "4px",
                         }}
                       >
-                        <h4 className="heading-6">{req.service.name}</h4>
+                        <h4 className="heading-6">{req.serviceId.name}</h4>
                         <Badge>New Request</Badge>
                       </div>
                       <p className="body-muted">
-                        {req.user.name} • {req.scheduledAt?.slice(0, 10)}
+                        {req.userId.name} • {req.messages[0].proposal.startTime.slice(0, 10)}
                       </p>
                     </div>
                     <div
@@ -129,7 +126,7 @@ const ProviderDashboard = () => {
                     >
                       <Button
                         variant="primary"
-                        onClick={() => navigate(`/provider/job/${req._id}`)}
+                        onClick={() => navigate(`/provider/requests`, { state: { selectedRequestId: req._id } })}
                       >
                         Review & Propose
                       </Button>

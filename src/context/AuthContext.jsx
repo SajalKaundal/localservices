@@ -30,42 +30,38 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const setRoleLocally = (role, authToken = null) => {
+  const setRoleLocally = (role) => {
     localStorage.setItem('userRole', role);
     setUserRole(role);
-    if (authToken) {
-      localStorage.setItem('token', authToken);
-      setToken(authToken);
-    }
   };
 
   const loginConsumer = async (email, password) => {
     const res = await svcLoginConsumer(email, password);
-    setRoleLocally(res.role, res.token);
+    setRoleLocally(res.role);
     return res;
   };
 
   const loginProvider = async (email, password) => {
     const res = await svcLoginProvider(email, password);
-    setRoleLocally(res.role, res.token);
+    setRoleLocally(res.role,);
     return res;
   };
 
   const signupConsumer = async (email, password, name) => {
     const res = await svcSignupConsumer(email, password, name);
-    setRoleLocally(res.role, res.token);
+    setRoleLocally(res.role);
     return res;
   };
 
   const signupProvider = async (email, password, name) => {
     const res = await svcSignupProvider(email, password, name);
-    setRoleLocally(res.role, res.token);
+    setRoleLocally(res.role);
     return res;
   };
 
   const loginWithGoogle = async (role) => {
     const res = await svcLoginWithGoogle(role);
-    setRoleLocally(res.role, res.token);
+    setRoleLocally(res.role);
     return res;
   };
 

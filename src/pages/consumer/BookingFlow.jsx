@@ -60,7 +60,6 @@ const BookingFlow = () => {
       ).toISOString();
 
       const finalData = {
-        userId: "69f3769965de75f0df8f8eac",
         serviceId: formData.service,
         providerId: formData.provider,
         address: formData.address,
