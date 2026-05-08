@@ -9,6 +9,7 @@ export const createRequest = async (request) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(request),
@@ -31,6 +32,7 @@ export const fetchRequests = async () => {
     const response = await fetch(`${API_URL}/requests/`, {
       headers: {
         "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
         Authorization: `Bearer ${token}`,
       },
     });
@@ -45,12 +47,15 @@ export const fetchRequests = async () => {
   }
 };
 
-export const updateRequestStatus = async (requestId, updateData) => {
+export const updateRequestStatus = async (requestId, updateData, action) => {
   try {
-    const response = await fetch(`${API_URL}/requests/${requestId}`, {
+    const token = await getToken()
+    const response = await fetch(`${API_URL}/requests/${requestId}/${action}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        role:localStorage.getItem("userRole"),
+        Authorization:`Bearer ${token}`
       },
       body: JSON.stringify(updateData),
     });
@@ -59,7 +64,7 @@ export const updateRequestStatus = async (requestId, updateData) => {
     if (!data.success) {
       throw new Error("Failed to update request");
     }
-    return data.request;
+    return { request: data.request, bookingId: data.bookingId };
   } catch (err) {
     console.error(err.message);
     throw err;
@@ -67,25 +72,44 @@ export const updateRequestStatus = async (requestId, updateData) => {
 };
 
 export const sendTextMessage = async (requestId, text) => {
-  try{
-    const token = await getToken()
-     const response = await fetch(`${API_URL}/requests/send-text`,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/requests/send-text`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
         Authorization: `Bearer ${token}`,
       },
-      body:JSON.stringify({requestId,text})
-     })
-     const data = await response.json()
-     if(!data.success){
-      throw new Error("Message not sent")
-     }
-     return data.data
+      body: JSON.stringify({ requestId, text }),
+    });
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error("Message not sent");
+    }
+    return data.data;
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+};
+
+export const sendProposal = async (requestId,proposal)=>{
+  try{
+    const token = await getToken()
+    const response = await fetch(`${API_URL}/requests/${requestId}/propose`,{
+      method:"PATCH",
+      headers:{
+        "Content-Type":"application/json",
+        role:localStorage.getItem("userRole"),
+        Authorization:`Bearer ${token}`
+      },
+      body:JSON.stringify(proposal)
+    })
+    const data = await response.json(response)
+    return data.request
   }catch(err){
     console.error(err.message)
     throw err
   }
-
 }
-

@@ -16,7 +16,10 @@ const ProviderDashboard = () => {
   useEffect(() => {
     const getRequests = async () => {
       const requests = await fetchRequests();
-      setNewRequests(requests);
+      const newRequests = requests.filter(
+        (r) => r.status === "Pending" || r.status === "Negotiating",
+      );
+      setNewRequests(newRequests);
       // setLoading(false);
     };
     const getBookings = async () => {
@@ -28,7 +31,7 @@ const ProviderDashboard = () => {
         const upcoming = bookings.filter(
           (b) =>
             b.bookingStatus === "confirmed" ||
-            b.bookingStatus === "in-progress"
+            b.bookingStatus === "in-progress",
         );
         setUpcomingJobs(upcoming);
       } catch (err) {
@@ -38,8 +41,8 @@ const ProviderDashboard = () => {
     getRequests();
     getBookings();
   }, []);
-  
-  console.log(newRequests)
+
+  console.log(newRequests);
   return (
     <div className="provider-dashboard">
       <div className="dashboard-grid">
@@ -117,7 +120,8 @@ const ProviderDashboard = () => {
                         <Badge>New Request</Badge>
                       </div>
                       <p className="body-muted">
-                        {req.userId.name} • {req.messages[0].proposal.startTime.slice(0, 10)}
+                        {req.userId.name} •{" "}
+                        {req.messages[0].proposal.startTime.slice(0, 10)}
                       </p>
                     </div>
                     <div
@@ -126,7 +130,11 @@ const ProviderDashboard = () => {
                     >
                       <Button
                         variant="primary"
-                        onClick={() => navigate(`/provider/requests`, { state: { selectedRequestId: req._id } })}
+                        onClick={() =>
+                          navigate(`/provider/requests`, {
+                            state: { selectedRequestId: req._id },
+                          })
+                        }
                       >
                         Review & Propose
                       </Button>

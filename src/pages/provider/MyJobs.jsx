@@ -14,7 +14,6 @@ const MyJobs = () => {
     const getBookings = async () => {
       try {
         const bookingsData = await fetchProviderBookings(
-          "69f36e3d65de75f0df8f8e7d",
         );
         const filteredBookings = bookingsData.filter(b => b.status !== "pending" && b.status !== "negotiating");
         setBookings(filteredBookings);

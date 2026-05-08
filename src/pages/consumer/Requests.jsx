@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
@@ -8,10 +8,43 @@ import {
   fetchRequests,
   updateRequestStatus,
   sendTextMessage,
+  sendProposal,
 } from "../../services/requestService";
 import { useAuth } from "../../context/AuthContext";
 import "./Requests.css";
 import { formatMessageTime } from "../../utils/formatMessageTime";
+
+const timeOptions = [
+  "08:00",
+  "08:30",
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+  "21:00",
+  "21:30",
+  "22:00",
+];
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
@@ -21,14 +54,16 @@ const Requests = () => {
   const [negotiationData, setNegotiationData] = useState({
     message: "",
     time: "",
-    price: "",
+    date: "",
     isSuggesting: false,
   });
+
+  const messagesEndRef = useRef(null);
 
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const tabs = ["All", "Pending", "Negotiating", "Action Required", "Closed"];
+  const tabs = ["All", "Pending", "Negotiating", "Closed"];
 
   useEffect(() => {
     const getRequests = async () => {
@@ -73,29 +108,44 @@ const Requests = () => {
 
   const handleAction = async (id, action, data = {}) => {
     if (action === "Accept") {
-      alert("Proposal accepted! Redirecting to booking details for payment.");
+      try {
+        const { bookingId } = await updateRequestStatus(id, data, action);
+        alert("Proposal accepted! Redirecting to booking details for payment.");
+        navigate(`/consumer/booking/${bookingId}?status=PENDING_PAYMENT`);
+      } catch (err) {
+        console.error(err.message);
+      }
       // In a real app, this would update the request and create a booking
-      navigate(`/consumer/booking/BK-1001?status=PENDING_PAYMENT`);
       return;
     } else if (action === "Send Proposal") {
-      const selectedReq = requests.find((r) => r._id === id);
+      const startTime = new Date(
+        `${negotiationData.date}T${negotiationData.time}:00+05:30`,
+      );
       const newMessage = {
-        sender: "user",
         text: negotiationData.message,
-        type:
-          negotiationData.time || negotiationData.price ? "proposal" : "text",
-        price: negotiationData.price || null,
-        time: negotiationData.time || null,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        startTime,
       };
 
+      const request = await sendProposal(id, newMessage);
+      if (!request) {
+        throw new Error("proposal not send");
+      }
+      const message = request.messages[request.messages.length - 1];
+      const updatedRequests = requests.map((r) => {
+        if (r._id === id) {
+          return {
+            ...r,
+            messages: [...r.messages, message],
+          };
+        }
+        return r;
+      });
+
+      setRequests(updatedRequests);
       setNegotiationData({
         message: "",
         time: "",
-        price: "",
+        duration: "",
         isSuggesting: false,
       });
       return;
@@ -103,7 +153,7 @@ const Requests = () => {
       setNegotiationData({
         message: "",
         time: "",
-        price: "",
+        duration: "",
         isSuggesting: false,
       });
       const message = await sendTextMessage(id, data.text);
@@ -124,8 +174,10 @@ const Requests = () => {
     // alert(`Action "${action}" triggered for request ${id}`);
   };
 
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [selectedRequest?.messages, selectedRequestId]);
   const selectedRequest = requests.find((r) => r._id === selectedRequestId);
-
   return (
     <div className="requests-page">
       <div className="requests-header">
@@ -248,7 +300,7 @@ const Requests = () => {
 
                             {msg.proposal?.startTime && (
                               <div className="proposal-item">
-                                <span>Start:</span>
+                                <span>Start: </span>
 
                                 <strong>
                                   {new Date(
@@ -265,7 +317,7 @@ const Requests = () => {
 
                             {msg.proposal?.endTime && (
                               <div className="proposal-item">
-                                <span>End:</span>
+                                <span>End: </span>
 
                                 <strong>
                                   {new Date(
@@ -282,7 +334,7 @@ const Requests = () => {
 
                             {msg.proposal?.estimatedDuration && (
                               <div className="proposal-item">
-                                <span>Duration:</span>
+                                <span>Duration: </span>
 
                                 <strong>
                                   {msg.proposal.estimatedDuration} mins
@@ -292,7 +344,7 @@ const Requests = () => {
 
                             {msg.proposal?.price && (
                               <div className="proposal-item">
-                                <span>Price:</span>
+                                <span>Price: </span>
 
                                 <strong>₹{msg.proposal.price}</strong>
                               </div>
@@ -304,6 +356,7 @@ const Requests = () => {
                         </span>
                       </div>
                     ))}
+                    <div ref={messagesEndRef} />
                   </div>
                 </div>
 
@@ -314,28 +367,91 @@ const Requests = () => {
                         {negotiationData.isSuggesting ? (
                           <div className="suggestion-form">
                             <div className="form-row">
-                              <Input
-                                type="time"
-                                label="Suggest Time"
-                                value={negotiationData.time}
-                                onChange={(e) =>
-                                  setNegotiationData({
-                                    ...negotiationData,
-                                    time: e.target.value,
-                                  })
-                                }
-                              />
-                              <Input
-                                type="number"
-                                label="Suggest Price (₹)"
-                                value={negotiationData.price}
-                                onChange={(e) =>
-                                  setNegotiationData({
-                                    ...negotiationData,
-                                    price: e.target.value,
-                                  })
-                                }
-                              />
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "8px",
+                                  flex: 1,
+                                }}
+                              >
+                                <label
+                                  style={{
+                                    fontSize: "12px",
+                                    color: "var(--color-shade-50)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.72px",
+                                  }}
+                                >
+                                  Suggest Date
+                                </label>
+                                <Input
+                                  value={negotiationData.date}
+                                  type="date"
+                                  onChange={(e) =>
+                                    setNegotiationData({
+                                      ...negotiationData,
+                                      date: e.target.value,
+                                    })
+                                  }
+                                />
+                                <label
+                                  style={{
+                                    fontSize: "12px",
+                                    color: "var(--color-shade-50)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.72px",
+                                  }}
+                                >
+                                  Suggest Time
+                                </label>
+                                <select
+                                  value={negotiationData.time}
+                                  onChange={(e) =>
+                                    setNegotiationData({
+                                      ...negotiationData,
+                                      time: e.target.value,
+                                    })
+                                  }
+                                  style={{
+                                    width: "100%",
+                                    backgroundColor: "transparent",
+                                    color: "#FFFFFF",
+                                    border: "1px solid #3F3F46",
+                                    borderRadius: "8px",
+                                    padding: "12px 16px",
+                                    outline: "none",
+                                    appearance: "auto",
+                                    fontFamily: "inherit",
+                                  }}
+                                >
+                                  <option value="" style={{ color: "#000" }}>
+                                    Select Time
+                                  </option>
+                                  {timeOptions.map((t) => (
+                                    <option
+                                      key={t}
+                                      value={t}
+                                      style={{ color: "#000" }}
+                                    >
+                                      {t}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              {/* <div style={{ flex: 1 }}>
+                                <Input
+                                  type="number"
+                                  label="Est. Duration (mins)"
+                                  value={negotiationData.duration}
+                                  onChange={(e) =>
+                                    setNegotiationData({
+                                      ...negotiationData,
+                                      duration: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div> */}
                             </div>
                             <Input
                               label="Message"

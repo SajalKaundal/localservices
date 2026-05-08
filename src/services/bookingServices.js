@@ -1,13 +1,21 @@
+import { getToken } from "../utils/authHelper";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const fetchUserBookings = async (
-  uid,
   upComingBookings = false,
   pendingPayment = false,
 ) => {
   try {
+    const token = await getToken();
     const response = await fetch(
-      `${API_URL}/user/bookings/${uid}/?upComingBookings=${upComingBookings}&pendingPayment=${pendingPayment}`,
+      `${API_URL}/user/bookings/?upComingBookings=${upComingBookings}&pendingPayment=${pendingPayment}`,
+      {
+        headers: {
+          role: localStorage.getItem("userRole"),
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
     const data = await response.json();
     if (!data.success) {
@@ -22,9 +30,16 @@ const fetchUserBookings = async (
 
 const fetchServiceDetails = async (sid = undefined, pid) => {
   try {
+    const token = await getToken();
     if (sid) {
       const response = await fetch(
-        `${API_URL}/provider/${pid}/services/${sid}`,
+        `${API_URL}/provider/service/?sid=${sid}&pid=${pid}`,
+        {
+          headers: {
+            role: localStorage.getItem("userRole"),
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       const data = await response.json();
       if (!data.success) {
@@ -32,7 +47,12 @@ const fetchServiceDetails = async (sid = undefined, pid) => {
       }
       return [data.service];
     } else {
-      const response = await fetch(`${API_URL}/provider/${pid}/services`);
+      const response = await fetch(`${API_URL}/provider/${pid}/services`, {
+        headers: {
+          role: localStorage.getItem("userRole"),
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       if (!data.success) {
         throw new Error("Unable to fetch service");

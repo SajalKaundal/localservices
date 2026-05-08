@@ -1,8 +1,17 @@
+import { getToken } from "../utils/authHelper";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-const fetchServices = async (_id) => {
+const fetchServices = async (_id = null) => {
   try {
-    const response = await fetch(`${API_URL}/provider/${_id}/services`);
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/provider/services/?pid=${_id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -32,12 +41,15 @@ const fetchService = async (pid, sid) => {
   }
 };
 
-const addService = async (pid, service) => {
+const addService = async (service) => {
   try {
-    const response = await fetch(`${API_URL}/provider/${pid}/services`, {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/provider/services/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(service),
     });
@@ -59,9 +71,9 @@ const addService = async (pid, service) => {
   }
 };
 
-const deleteService = async (pid, sid) => {
+const deleteService = async (sid) => {
   try {
-    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`, {
+    const response = await fetch(`${API_URL}/provider/services/?sid=${sid}`, {
       method: "DELETE",
     });
     const data = await response.json();
@@ -92,9 +104,16 @@ const updateService = async (pid, sid, service) => {
   }
 };
 
-const fetchProviderBookings = async (pid) => {
+const fetchProviderBookings = async () => {
   try {
-    const response = await fetch(`${API_URL}/provider/bookings/${pid}`);
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/provider/bookings/`, {
+      headers: {
+        "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await response.json();
     if (!data.success) {
       throw new Error("Unable to fetch Provder bookings");

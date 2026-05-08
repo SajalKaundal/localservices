@@ -13,7 +13,7 @@ const MyBookings = () => {
   useEffect(() => {
     const getBookings = async () => {
       try {
-        const bookings = await fetchUserBookings("69f3769965de75f0df8f8eac");
+        const bookings = await fetchUserBookings();
         setBookings(bookings);
       } catch (err) {
         console.error(err.message);

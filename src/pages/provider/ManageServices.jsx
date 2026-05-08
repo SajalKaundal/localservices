@@ -13,7 +13,7 @@ const ManageServices = () => {
 
   const onDelete = async (sid) => {
     try {
-      await deleteService("69f36e3d65de75f0df8f8e7d", sid);
+      await deleteService(sid);
     } catch (err) {
       console.error(err.message);
     }
@@ -22,7 +22,7 @@ const ManageServices = () => {
   useEffect(() => {
     const getServices = async () => {
       try {
-        const services = await fetchServices("69f36e3d65de75f0df8f8e7d");
+        const services = await fetchServices();
         setServices(services);
       } catch (err) {
         console.error(err.message);

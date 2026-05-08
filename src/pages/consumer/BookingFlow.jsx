@@ -10,6 +10,13 @@ import {
 } from "../../services/bookingServices";
 import { createRequest } from "../../services/requestService";
 
+const timeOptions = [
+  "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+  "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30",
+  "20:00", "20:30", "21:00", "21:30", "22:00"
+];
+
 const BookingFlow = () => {
   const [searchParams] = useSearchParams();
   const serviceId = searchParams.get("serviceId");
@@ -215,12 +222,30 @@ const BookingFlow = () => {
                   onChange={handleChange}
                 />
 
-                <Input
-                  type="time"
-                  label="Preferred Time (Optional)"
-                  name="preferredTime"
-                  onChange={handleChange}
-                />
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+                  <label style={{ fontSize: "12px", color: "var(--color-shade-50)", textTransform: "uppercase", letterSpacing: "0.72px" }}>Preferred Time (Optional)</label>
+                  <select 
+                    name="preferredTime"
+                    value={formData.preferredTime}
+                    onChange={handleChange}
+                    style={{
+                      width: "100%",
+                      backgroundColor: "transparent",
+                      color: "#FFFFFF",
+                      border: "1px solid #3F3F46",
+                      borderRadius: "8px",
+                      padding: "12px 16px",
+                      outline: "none",
+                      appearance: "auto",
+                      fontFamily: "inherit"
+                    }}
+                  >
+                    <option value="" style={{ color: "#000" }}>Select Time</option>
+                    {timeOptions.map((t) => (
+                      <option key={t} value={t} style={{ color: "#000" }}>{t}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
 

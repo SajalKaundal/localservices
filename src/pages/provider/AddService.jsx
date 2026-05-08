@@ -11,8 +11,9 @@ const AddService = () => {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
-    pricingType: "Fixed",
+    pricingType: "fixed",
     basePrice: "",
+    estimatedDuration: "",
     description: ""
   });
 
@@ -29,7 +30,7 @@ const AddService = () => {
     e.preventDefault();
     try{
 
-      const data = await addService("69f36e3d65de75f0df8f8e7d",formData)
+      const data = await addService(formData)
       if(!data){
         throw new Error("Adding Service Failed")
       }
@@ -117,14 +118,52 @@ const AddService = () => {
             </div>
           </div>
 
-          <Input
-            label="Rate (₹)"
-            name="basePrice"
-            value={formData.rate}
-            onChange={handleChange}
-            placeholder="e.g., 45.00"
-            // fullWidth
-          />
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <div style={{ flex: 1 }}>
+              <Input
+                label="Rate (₹)"
+                name="basePrice"
+                value={formData.basePrice}
+                onChange={handleChange}
+                placeholder="e.g., 45.00"
+                // fullWidth
+              />
+            </div>
+
+            {formData.pricingType === 'fixed' && (
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>
+                  Estimated Duration
+                </label>
+                <select
+                  name="estimatedDuration"
+                  value={formData.estimatedDuration}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    backgroundColor: '#0F172A',
+                    border: '1px solid #334155',
+                    borderRadius: '8px',
+                    color: '#F8FAFC',
+                    fontSize: '15px'
+                  }}
+                >
+                  <option value="">Select duration</option>
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="5">5 hours</option>
+                  <option value="6">6 hours</option>
+                  <option value="7">7 hours</option>
+                  <option value="8">8 hours</option>
+                  <option value="9">9 hours</option>
+                  <option value="10">10 hours</option>
+                </select>
+              </div>
+            )}
+          </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>

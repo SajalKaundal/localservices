@@ -18,7 +18,6 @@ const ConsumerDashboard = () => {
     const getUpComingBookings = async () => {
       try {
         const upComingBookings = await fetchUserBookings(
-          "69f3769965de75f0df8f8eac",
           true,
         );
         setUpComingsBookings(upComingBookings);
@@ -29,7 +28,6 @@ const ConsumerDashboard = () => {
     const getPendingPayment = async () => {
       try {
         const pendingPayment = await fetchUserBookings(
-          "69f3769965de75f0df8f8eac",
           false,
           true,
         );
