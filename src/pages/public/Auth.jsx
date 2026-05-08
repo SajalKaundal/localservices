@@ -5,6 +5,8 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { resetPassword } from '../../services/authService';
+import LoginForm from '../../components/auth/LoginForm';
+import RegisterForm from '../../components/auth/RegisterForm';
 import './Auth.css';
 
 const Auth = () => {
@@ -33,8 +35,6 @@ const Auth = () => {
   const [message, setMessage] = useState('');
 
   const { loginConsumer, loginProvider, signupConsumer, signupProvider, loginWithGoogle, mockLogin } = useAuth();
-
-  const handleRoleChange = (selectedRole) => setRole(selectedRole);
 
   const performLoginRedirect = () => {
     if (role === 'provider') {
@@ -138,49 +138,42 @@ const Auth = () => {
           {error && <div className="auth-error" style={{color: '#ef4444', marginBottom: '16px', fontSize: '14px'}}>{error}</div>}
           {message && <div className="auth-message" style={{color: 'var(--color-neon-green)', marginBottom: '16px', fontSize: '14px'}}>{message}</div>}
           
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {!isLogin && !isForgotPassword && (
+          {isForgotPassword ? (
+            <form className="auth-form" onSubmit={handleSubmit}>
               <Input 
-                label="Full Name" 
-                placeholder="John Doe" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                label="Email Address" 
+                type="email" 
+                placeholder="name@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required 
               />
-            )}
-            <Input 
-              label="Email Address" 
-              type="email" 
-              placeholder="name@example.com" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
+              <Button type="submit" variant="primary" className="auth-submit-btn" style={{ width: '100%' }}>
+                Send Reset Link
+              </Button>
+            </form>
+          ) : isLogin ? (
+            <LoginForm 
+              email={email} 
+              setEmail={setEmail} 
+              password={password} 
+              setPassword={setPassword} 
+              onSubmit={handleSubmit} 
+              toggleForgotPassword={toggleForgotPassword} 
             />
-            {!isForgotPassword && (
-              <>
-                <Input 
-                  label="Password" 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
-                {isLogin && (
-                  <div style={{textAlign: 'right', marginTop: '-8px', marginBottom: '16px'}}>
-                    <button type="button" onClick={toggleForgotPassword} style={{background: 'none', border: 'none', color: 'var(--color-shade-50)', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline'}}>
-                      Forgot Password?
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
+          ) : (
+            <RegisterForm 
+              name={name} 
+              setName={setName} 
+              email={email} 
+              setEmail={setEmail} 
+              password={password} 
+              setPassword={setPassword} 
+              onSubmit={handleSubmit} 
+            />
+          )}
             
-            <Button type="submit" variant="primary" className="auth-submit-btn">
-              {isForgotPassword ? 'Send Reset Link' : isLogin ? 'Log in' : 'Sign up'}
-            </Button>
-            
-            {!isForgotPassword && (
+          {!isForgotPassword && (
               <>
                 <div style={{display: 'flex', alignItems: 'center', margin: '16px 0', color: 'var(--color-shade-50)'}}>
                    <div style={{flex: 1, height: '1px', backgroundColor: 'var(--color-dark-card-border)'}}></div>
@@ -194,7 +187,6 @@ const Auth = () => {
                 </Button>
               </>
             )}
-          </form>
 
           <div className="auth-footer">
             {isForgotPassword ? (

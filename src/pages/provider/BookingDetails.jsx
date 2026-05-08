@@ -9,7 +9,7 @@ const BookingDetails = () => {
   const [bookingState, setBookingState] = useState('CONFIRMED'); 
   // State flow: PENDING_PAYMENT -> CONFIRMED -> IN_PROGRESS -> COMPLETED -> FINAL_PAYMENT_PENDING -> CLOSED
 
-  const [jobDetails, setJobDetails] = useState({
+  const [jobDetails] = useState({
     time: '10:00 AM',
     price: 1200
   });

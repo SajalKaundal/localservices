@@ -6,12 +6,6 @@ import Badge from '../../components/ui/Badge';
 import './ServiceListing.css';
 import { fetchProviders } from '../../services/publicServices';
 
-const providersList = [
-  { id: 1, name: "CoolBreeze AC", exp: "5 years", price: "₹45/hr", rating: 4.9, available: true },
-  { id: 2, name: "Polar Express Air", exp: "8 years", price: "₹60/hr", rating: 4.7, available: true },
-  { id: 3, name: "QuickFix AC", exp: "2 years", price: "₹35/hr", rating: 4.2, available: false },
-];
-
 const ServiceListing = () => {
   const navigate = useNavigate();
   const [providers,setProviders] = useState([])

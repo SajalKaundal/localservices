@@ -47,8 +47,8 @@ const MyBookings = () => {
                 bookings.map((b) => (
                   <tr key={b._id}>
                     <td>{b.bookingId}</td>
-                    <td>{b.service.name}</td>
-                    <td>{b.provider.name}</td>
+                    <td>{b.serviceId.name}</td>
+                    <td>{b.providerId.name}</td>
                     <td>{b.createdAt.slice(0, 10)}</td>
                     <td>
                       <Badge>

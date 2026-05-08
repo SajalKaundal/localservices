@@ -3,8 +3,9 @@
   backdrop-filter: blur(8px);
   color: var(--color-white);
   border-radius: 4px;
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 400;
   display: inline-block;
+  transition: all 200ms ease;
 }

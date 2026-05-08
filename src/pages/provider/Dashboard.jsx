@@ -5,6 +5,8 @@ import Button from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { fetchProviderBookings } from "../../services/providerServices";
 import { fetchRequests } from "../../services/requestService";
+import StatCard from "../../components/dashboard/StatCard";
+import ProviderJobCard from "../../components/dashboard/ProviderJobCard";
 // Reusing consumer dashboard CSS for grid structure
 import "../consumer/Dashboard.css";
 
@@ -50,45 +52,9 @@ const ProviderDashboard = () => {
           {/* Stats Row */}
           <section className="dashboard-section">
             <div className="recommendations-grid">
-              <Card elevation="subtle" className="rec-card">
-                <h4 className="heading-6 body-muted">Monthly Earnings</h4>
-                <div
-                  className="display-xl"
-                  style={{
-                    fontSize: "48px",
-                    marginTop: "8px",
-                    color: "var(--color-white)",
-                  }}
-                >
-                  ₹1,240
-                </div>
-              </Card>
-              <Card elevation="subtle" className="rec-card">
-                <h4 className="heading-6 body-muted">Completed Jobs</h4>
-                <div
-                  className="display-xl"
-                  style={{
-                    fontSize: "48px",
-                    marginTop: "8px",
-                    color: "var(--color-white)",
-                  }}
-                >
-                  18
-                </div>
-              </Card>
-              <Card elevation="subtle" className="rec-card">
-                <h4 className="heading-6 body-muted">Rating</h4>
-                <div
-                  className="display-xl"
-                  style={{
-                    fontSize: "48px",
-                    marginTop: "8px",
-                    color: "var(--color-white)",
-                  }}
-                >
-                  4.9
-                </div>
-              </Card>
+              <StatCard title="Monthly Earnings" value="₹1,240" />
+              <StatCard title="Completed Jobs" value="18" />
+              <StatCard title="Rating" value="4.9" />
             </div>
           </section>
 
@@ -98,48 +64,19 @@ const ProviderDashboard = () => {
             <div className="bookings-list">
               {newRequests.length > 0 ? (
                 newRequests.map((req) => (
-                  <Card
+                  <ProviderJobCard
                     key={req._id}
-                    className="booking-card"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div className="booking-info">
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "8px",
-                          alignItems: "center",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        <h4 className="heading-6">{req.serviceId.name}</h4>
-                        <Badge>New Request</Badge>
-                      </div>
-                      <p className="body-muted">
-                        {req.userId.name} •{" "}
-                        {req.messages[0].proposal.startTime.slice(0, 10)}
-                      </p>
-                    </div>
-                    <div
-                      className="booking-actions"
-                      style={{ display: "flex", gap: "8px" }}
-                    >
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          navigate(`/provider/requests`, {
-                            state: { selectedRequestId: req._id },
-                          })
-                        }
-                      >
-                        Review & Propose
-                      </Button>
-                    </div>
-                  </Card>
+                    title={req.serviceId?.name}
+                    badgeText="New Request"
+                    subtitle={`${req.userId?.name} • ${req.messages[0]?.proposal?.startTime?.slice(0, 10)}`}
+                    buttonText="Review & Propose"
+                    buttonVariant="primary"
+                    onAction={() =>
+                      navigate(`/provider/requests`, {
+                        state: { selectedRequestId: req._id },
+                      })
+                    }
+                  />
                 ))
               ) : (
                 <p className="body-muted">
@@ -157,48 +94,19 @@ const ProviderDashboard = () => {
             <div className="bookings-list">
               {upcomingJobs.length > 0 ? (
                 upcomingJobs.map((job) => (
-                  <Card
+                  <ProviderJobCard
                     key={job._id}
-                    className="booking-card"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div className="booking-info">
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "8px",
-                          alignItems: "center",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        <h4 className="heading-6">{job.service.name}</h4>
-                        <Badge>
-                          {job.bookingStatus === "in-progress" ||
-                          job.status === "in-progress"
-                            ? "In Progress"
-                            : "Confirmed"}
-                        </Badge>
-                      </div>
-                      <p className="body-muted">
-                        {job.user.name} • {job.scheduledAt?.slice(0, 10)}
-                      </p>
-                    </div>
-                    <div
-                      className="booking-actions"
-                      style={{ display: "flex", gap: "8px" }}
-                    >
-                      <Button
-                        variant="secondary"
-                        onClick={() => navigate(`/provider/job/${job._id}`)}
-                      >
-                        Manage Job
-                      </Button>
-                    </div>
-                  </Card>
+                    title={job.service?.name}
+                    badgeText={
+                      job.bookingStatus === "in-progress" || job.status === "in-progress"
+                        ? "In Progress"
+                        : "Confirmed"
+                    }
+                    subtitle={`${job.user?.name} • ${job.scheduledAt?.slice(0, 10)}`}
+                    buttonText="Manage Job"
+                    buttonVariant="secondary"
+                    onAction={() => navigate(`/provider/job/${job._id}`)}
+                  />
                 ))
               ) : (
                 <p className="body-muted">No upcoming jobs.</p>

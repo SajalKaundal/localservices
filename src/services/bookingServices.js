@@ -28,6 +28,27 @@ const fetchUserBookings = async (
   }
 };
 
+const fetchUserBooking = async (id)=>{
+  try{
+    const token = await getToken()
+    const response = await fetch(`${API_URL}/user/booking/?bookingId=${id}`,{
+      headers:{
+        role:localStorage.getItem("userRole"),
+        Authorization:`Bearer ${token}`
+      }
+    })
+    const data = await response.json()
+
+    if(!data.success){
+      throw new Error("Unable to fetch booking")
+    }
+    return data.booking
+  }catch(err){
+    console.log(err.message)
+    throw err
+  }
+}
+
 const fetchServiceDetails = async (sid = undefined, pid) => {
   try {
     const token = await getToken();
@@ -86,4 +107,4 @@ const createBooking = async (uid, booking) => {
     throw err;
   }
 };
-export { fetchUserBookings, fetchServiceDetails, createBooking };
+export { fetchUserBookings, fetchServiceDetails, createBooking,fetchUserBooking };
