@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiTool, FiClipboard, FiDollarSign, FiSearch, FiHome, FiCalendar, FiMessageSquare, FiUser, FiCreditCard, FiMenu, FiX } from 'react-icons/fi';
+import { FiGrid, FiTool, FiClipboard, FiDollarSign, FiSearch, FiHome, FiCalendar, FiMessageSquare, FiUser, FiCreditCard, FiMenu, FiX, FiInbox } from 'react-icons/fi';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import './DashboardLayout.css';
@@ -16,6 +16,7 @@ const DashboardLayout = () => {
   
   const navLinks = isProvider ? [
     { name: 'Dashboard', path: '/provider/dashboard', icon: <FiGrid /> },
+    { name: 'Requests', path: '/provider/requests', icon: <FiInbox /> },
     { name: 'My Jobs', path: '/provider/jobs', icon: <FiTool /> },
     { name: 'Services', path: '/provider/services', icon: <FiClipboard /> },
     { name: 'Earnings', path: '/provider/earnings', icon: <FiDollarSign /> },

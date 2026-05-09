@@ -30,8 +30,7 @@ const BookingRequests = () => {
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
-  const tabs = ["All", "Pending", "Negotiating", "Action Required", "Closed"];
-
+  const tabs = ["All", "Pending", "Negotiating", "Closed"];
   useEffect(() => {
     const getRequests = async () => {
       try {
@@ -47,7 +46,9 @@ const BookingRequests = () => {
   }, []);
 
   const handleAction = async (id, action, data = {}) => {
+
     if (action === "Accept") {
+      console.log("accepted")
       try {
         await updateRequestStatus(id, data, action);
         alert("Proposal accepted!");
@@ -76,7 +77,7 @@ const BookingRequests = () => {
         estimatedDuration: duration,
         price,
       };
-      
+
       const request = await sendProposal(id, newMessage);
       if (!request) {
         throw new Error("proposal not send");
@@ -161,7 +162,8 @@ const BookingRequests = () => {
                   </div>
                   <Badge
                     style={{
-                      backgroundColor: getStatusColor(selectedRequest.status).bg,
+                      backgroundColor: getStatusColor(selectedRequest.status)
+                        .bg,
                       color: getStatusColor(selectedRequest.status).text,
                     }}
                   >
@@ -209,7 +211,7 @@ const BookingRequests = () => {
                         />
 
                         {(selectedRequest.status === "Negotiating" ||
-                        selectedRequest.status === "Pending") && (
+                          selectedRequest.status === "Pending") && (
                           <div
                             className="accept-panel"
                             style={{ marginTop: "24px" }}

@@ -73,8 +73,13 @@ const addService = async (service) => {
 
 const deleteService = async (sid) => {
   try {
+    const token = await getToken();
     const response = await fetch(`${API_URL}/provider/services/?sid=${sid}`, {
       method: "DELETE",
+      headers: {
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
+      },
     });
     const data = await response.json();
     if (!response.ok) {
@@ -124,6 +129,54 @@ const fetchProviderBookings = async () => {
     console.error(err.message);
   }
 };
+
+const fetchProviderBooking = async (bookingId) => {
+  try {
+    const token = await getToken();
+    const response = await fetch(
+      `${API_URL}/provider/booking?bookingId=${bookingId}`,
+      {
+        headers: {
+          role: localStorage.getItem("userRole"),
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error("Unable to Fetch Booking");
+    }
+    return data.booking;
+  } catch (err) {
+    console.log(err.message);
+    throw err;
+  }
+};
+
+const updateBookingStatus = async (bookingId,action) =>{
+  try{
+    const token = await getToken()
+    const response = await fetch(`${API_URL}/provider/booking/update`,{
+      method:'PATCH',
+      headers:{
+        "Content-Type":"application/json",
+        role:localStorage.getItem("userRole"),
+        Authorization:`Bearer ${token}`
+      },
+      body:JSON.stringify({
+        bookingId,action
+      }) 
+    })
+    const data = await response.json()
+    if(!data.success){
+      throw new Error("Unable to Update the booking status")
+    }
+    return data.booking
+  }catch(err){
+    console.error(err.message)
+    throw err
+  }
+}
 export {
   fetchServices,
   addService,
@@ -131,4 +184,6 @@ export {
   fetchService,
   updateService,
   fetchProviderBookings,
+  fetchProviderBooking,
+  updateBookingStatus
 };

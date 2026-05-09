@@ -13,9 +13,10 @@ const MyJobs = () => {
   useEffect(() => {
     const getBookings = async () => {
       try {
-        const bookingsData = await fetchProviderBookings(
+        const bookingsData = await fetchProviderBookings();
+        const filteredBookings = bookingsData.filter(
+          (b) => b.bookingStatus !== "pending" && b.bookingStatus !== "negotiating",
         );
-        const filteredBookings = bookingsData.filter(b => b.status !== "pending" && b.status !== "negotiating");
         setBookings(filteredBookings);
       } catch (err) {
         console.error(err.message);
@@ -38,7 +39,7 @@ const MyJobs = () => {
               <th>Service</th>
               <th>Customer</th>
               <th>Date</th>
-              <th>Status</th>
+              <th>bookingStatus</th>
               <th>Earnings</th>
               <th>Action</th>
             </tr>
@@ -48,11 +49,21 @@ const MyJobs = () => {
               bookings.map((b) => (
                 <tr key={b._id}>
                   <td>{b.bookingId}</td>
-                  <td>{b.service.name}</td>
-                  <td>{b.user.name}</td>
+                  <td>{b.serviceId.name}</td>
+                  <td>{b.userId.name}</td>
                   <td>{b.scheduledAt.slice(0, 10)}</td>
                   <td>
-                    {b.status === "confirmed" ? (
+                    {b.bookingStatus === "Advance-Payment-Pending" ||
+                    b.bookingStatus === "Final-Payment-Pending" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(245, 158, 11, 0.2)",
+                          color: "#F59E0B",
+                        }}
+                      >
+                        Payment Pending
+                      </Badge>
+                    ) : b.bookingStatus === "Confirmed" ? (
                       <Badge
                         style={{
                           backgroundColor: "rgba(54, 244, 164, 0.2)",
@@ -61,7 +72,7 @@ const MyJobs = () => {
                       >
                         Upcoming
                       </Badge>
-                    ) : b.status === "in-progress" ? (
+                    ) : b.bookingStatus === "In-Progress" ? (
                       <Badge
                         style={{
                           backgroundColor: "rgba(59, 130, 246, 0.2)",
@@ -70,15 +81,35 @@ const MyJobs = () => {
                       >
                         In Progress
                       </Badge>
-                    ) : (
+                    ) : b.bookingStatus === "Completed" ? (
                       <Badge
-                        style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                          color: "#FFFFFF",
+                        }}
                       >
                         Completed
                       </Badge>
+                    ) : b.bookingStatus === "Cancelled" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(239, 68, 68, 0.2)",
+                          color: "#EF4444",
+                        }}
+                      >
+                        Cancelled
+                      </Badge>
+                    ) : (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                        }}
+                      >
+                        Unknown
+                      </Badge>
                     )}
                   </td>
-                  <td>₹{b.service.basePrice}</td>
+                  <td>₹{b.totalAmount}</td>
                   <td>
                     <Button
                       variant="ghost"

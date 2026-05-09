@@ -1,86 +1,108 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import { initiatePayment } from "../../utils/paymentUtils";
 import "./ConsumerPages.css";
 import { fetchUserBooking } from "../../services/bookingServices";
+import { createOrder } from "../../services/paymentServices";
 
 const BookingDetails = () => {
-  const [searchParams] = useSearchParams();
-  const initialStatus = searchParams.get("status");
-  const { id } = useParams();
-  console.log(id);
-  // Booking state now only focuses on the tracking and payment phases
-  const [bookingState, setBookingState] = useState(
-    initialStatus || "CONFIRMED",
-  );
-  // State flow: PENDING_PAYMENT -> CONFIRMED -> IN_PROGRESS -> COMPLETED -> FINAL_PAYMENT_PENDING -> CLOSED
-  const [bookingData, setBookingData] = useState({});
-  // // Mocked booking data
-  // const bookingData = {
-  //   id: 'BK-1001',
-  //   service: 'AC Deep Cleaning',
-  //   provider: 'CoolBreeze AC',
-  //   agreedPrice: 1200,
-  //   scheduledDate: '2026-05-12',
-  //   scheduledTime: '11:00 AM'
+  // const [searchParams] = useSearchParams();
+  // const initialStatus = searchParams.get("status");
 
-  const handleAdvancePayment = () => {
+  const { id } = useParams();
+
+  // const [bookingState, setBookingState] = useState(
+  //   initialStatus || "Confirmed",
+  // );
+
+  const [bookingData, setBookingData] = useState({
+    bookingId: "",
+
+    userId: "",
+    providerId: { providerId: "" },
+    serviceId: { name: "" },
+    address: "",
+    scheduledAt: "",
+    completeAt: "",
+    totalAmount: "",
+    advanceAmount: "",
+    remainingAmount: "",
+    bookingStatus: "Advance-Payment-Pending",
+  });
+
+  const handleAdvancePayment = async () => {
+    const order = await createOrder(id);
     initiatePayment({
-      amount: bookingData.agreedPrice * 0.1, // 10% advance
-      description: `Advance Deposit for ${bookingData.service}`,
+      order,
+      description: `Advance Deposit for ${bookingData.serviceId.name}`,
       onSuccess: (txId) => {
         alert(`Payment successful! ID: ${txId}`);
-        setBookingState("CONFIRMED");
+        setBookingData((prev) => ({
+          ...prev,
+          bookingStatus: "Confirmed",
+        }));
       },
     });
   };
 
-  const handleFinalPayment = () => {
-    const remaining = bookingData.agreedPrice - bookingData.agreedPrice * 0.1;
+  const handleFinalPayment = async () => {
+    const order = await createOrder(id);
 
     initiatePayment({
-      amount: remaining,
-      description: `Remaining Balance for ${bookingData.service}`,
+      order,
+      description: `Remaining Balance for ${bookingData.serviceId.name}`,
       onSuccess: (txId) => {
         alert(`Payment successful! ID: ${txId}`);
-        setBookingState("CLOSED");
+        setBookingData((prev) => ({
+          ...prev,
+          bookingStatus: "Completed",
+        }));
       },
     });
   };
 
   const renderBadge = () => {
-    switch (bookingState) {
-      case "PENDING_PAYMENT":
-        return <Badge>Pending Deposit</Badge>;
-      case "CONFIRMED":
+    switch (bookingData.bookingStatus) {
+      case "Advance-Payment-Pending":
+        return <Badge>Pending Payment</Badge>;
+
+      case "Confirmed":
         return <Badge>Confirmed</Badge>;
-      case "IN_PROGRESS":
+
+      case "In-Progress":
         return <Badge>In Progress</Badge>;
-      case "COMPLETED":
-      case "FINAL_PAYMENT_PENDING":
-        return <Badge>Final Payment Due</Badge>;
-      case "CLOSED":
-        return <Badge>Closed</Badge>;
+
+      case "Final-Payment-Pending":
+        return <Badge>Final Payment Pending</Badge>;
+
+      case "Completed":
+        return <Badge>Completed</Badge>;
+
+      case "Cancelled":
+        return <Badge>Cancelled</Badge>;
+
       default:
         return null;
     }
   };
 
   useEffect(() => {
-    const getBooking = async (id) => {
+    const getBooking = async () => {
       try {
         const booking = await fetchUserBooking(id);
+
         setBookingData(booking);
       } catch (err) {
         console.error(err.message);
       }
     };
-    getBooking(id);
+
+    getBooking();
   }, [id]);
-  console.log(bookingData)
+
   return (
     <div className="consumer-page">
       <div className="booking-details-header">
@@ -88,38 +110,55 @@ const BookingDetails = () => {
         {renderBadge()}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
-        {/* Service Info Header */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: "24px",
+        }}
+      >
+        {/* Service Header */}
         <Card elevation="medium">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <div>
               <h3 className="heading-5" style={{ marginBottom: "8px" }}>
                 {bookingData.serviceId.name}
               </h3>
+
               <p className="body-muted">
-                Provider: <strong>{bookingData.provider}</strong>
+                Provider: <strong>{bookingData.providerId.name}</strong>
               </p>
             </div>
+
             <div style={{ textAlign: "right" }}>
               <p className="body-muted" style={{ fontSize: "12px" }}>
                 Booking ID
               </p>
-              <p style={{ fontWeight: 600 }}>{bookingData.id}</p>
+
+              <p style={{ fontWeight: 600 }}>{bookingData.bookingId}</p>
             </div>
           </div>
         </Card>
 
-        {/* Advance Payment Screen */}
-        {bookingState === "PENDING_PAYMENT" && (
+        {/* Pending Payment */}
+        {bookingData.bookingStatus === "Advance-Payment-Pending" && (
           <Card
             elevation="medium"
-            style={{ border: "1px solid var(--color-shade-70)" }}
+            style={{
+              border: "1px solid var(--color-shade-70)",
+            }}
           >
             <h3 className="heading-5" style={{ marginBottom: "16px" }}>
               Advance Payment Required
             </h3>
+
             <p className="body-muted" style={{ marginBottom: "16px" }}>
-              Please pay the advance deposit to confirm your booking.
+              Please pay the advance payment to confirm booking.
             </p>
 
             <div
@@ -129,20 +168,21 @@ const BookingDetails = () => {
                 marginBottom: "8px",
               }}
             >
-              <span>Agreed Price</span>
-              <span>₹{bookingData.agreedPrice}</span>
+              <span>Total Price</span>
+              <span>₹{bookingData.totalAmount}</span>
             </div>
+
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 marginBottom: "16px",
-                color: "var(--color-white)",
               }}
             >
-              <span>Advance Deposit (10%)</span>
+              <span>Advance Payment</span>
+
               <span style={{ fontWeight: "bold" }}>
-                ₹{bookingData.agreedPrice * 0.1}
+                ₹{bookingData.advanceAmount}
               </span>
             </div>
 
@@ -151,21 +191,21 @@ const BookingDetails = () => {
               style={{ width: "100%" }}
               onClick={handleAdvancePayment}
             >
-              Pay Deposit Now
+              Pay Now
             </Button>
           </Card>
         )}
 
-        {/* Tracking Timeline (Confirmed -> Complete) */}
-        {(bookingState === "CONFIRMED" ||
-          bookingState === "IN_PROGRESS" ||
-          bookingState === "COMPLETED" ||
-          bookingState === "FINAL_PAYMENT_PENDING" ||
-          bookingState === "CLOSED") && (
+        {/* Timeline */}
+        {(bookingData.bookingStatus === "Confirmed" ||
+          bookingData.bookingStatus === "In-Progress" ||
+          bookingData.bookingStatus === "Final-Payment-Pending" ||
+          bookingData.bookingStatus === "Completed") && (
           <Card elevation="medium">
             <h3 className="heading-5" style={{ marginBottom: "16px" }}>
-              Status Timeline
+              Booking Timeline
             </h3>
+
             <div
               style={{
                 display: "flex",
@@ -184,7 +224,7 @@ const BookingDetails = () => {
                   width: "2px",
                   backgroundColor: "var(--color-shade-70)",
                 }}
-              ></div>
+              />
 
               {/* Confirmed */}
               <div style={{ position: "relative" }}>
@@ -198,11 +238,17 @@ const BookingDetails = () => {
                     borderRadius: "50%",
                     backgroundColor: "var(--color-neon-green)",
                   }}
-                ></div>
+                />
+
                 <p style={{ fontWeight: "500" }}>Booking Confirmed</p>
+
                 <span className="body-muted" style={{ fontSize: "12px" }}>
-                  Scheduled for {bookingData.scheduledDate} at{" "}
-                  {bookingData.scheduledTime}
+                  Scheduled for{" "}
+                  {new Date(bookingData.scheduledAt).toLocaleDateString()} at{" "}
+                  {new Date(bookingData.scheduledAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
               </div>
 
@@ -217,33 +263,69 @@ const BookingDetails = () => {
                     height: "12px",
                     borderRadius: "50%",
                     backgroundColor:
-                      bookingState === "IN_PROGRESS" ||
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "In-Progress" ||
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
                         ? "var(--color-neon-green)"
                         : "var(--color-void)",
+
                     border:
-                      bookingState === "IN_PROGRESS" ||
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "In-Progress" ||
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
                         ? "none"
                         : "2px solid var(--color-shade-50)",
                   }}
-                ></div>
+                />
+
                 <p
                   style={{
                     color:
-                      bookingState === "IN_PROGRESS" ||
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "In-Progress" ||
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
                         ? "white"
                         : "var(--color-shade-50)",
                   }}
                 >
                   Service In Progress
+                </p>
+              </div>
+
+              {/* Final Payment Pending */}
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "-22px",
+                    top: "4px",
+                    width: "12px",
+                    height: "12px",
+                    borderRadius: "50%",
+                    backgroundColor:
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
+                        ? "var(--color-neon-green)"
+                        : "var(--color-void)",
+
+                    border:
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
+                        ? "none"
+                        : "2px solid var(--color-shade-50)",
+                  }}
+                />
+
+                <p
+                  style={{
+                    color:
+                      bookingData.bookingStatus === "Final-Payment-Pending" ||
+                      bookingData.bookingStatus === "Completed"
+                        ? "white"
+                        : "var(--color-shade-50)",
+                  }}
+                >
+                  Final Payment Pending
                 </p>
               </div>
 
@@ -258,41 +340,50 @@ const BookingDetails = () => {
                     height: "12px",
                     borderRadius: "50%",
                     backgroundColor:
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "Completed"
                         ? "var(--color-neon-green)"
                         : "var(--color-void)",
+
                     border:
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "Completed"
                         ? "none"
                         : "2px solid var(--color-shade-50)",
                   }}
-                ></div>
+                />
+
                 <p
                   style={{
                     color:
-                      bookingState === "COMPLETED" ||
-                      bookingState === "FINAL_PAYMENT_PENDING" ||
-                      bookingState === "CLOSED"
+                      bookingData.bookingStatus === "Completed"
                         ? "white"
                         : "var(--color-shade-50)",
                   }}
                 >
-                  Completed
+                  Booking Completed
                 </p>
               </div>
             </div>
 
-            {/* Action buttons for tracking phase */}
-            {bookingState === "CONFIRMED" && (
-              <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
+            {/* Actions */}
+            {bookingData.bookingStatus === "Confirmed" && (
+              <div
+                style={{
+                  marginTop: "24px",
+                  display: "flex",
+                  gap: "12px",
+                }}
+              >
                 <Button variant="ghost" style={{ flex: 1 }}>
                   Contact Provider
                 </Button>
-                <Button variant="ghost" style={{ flex: 1, color: "#EF4444" }}>
+
+                <Button
+                  variant="ghost"
+                  style={{
+                    flex: 1,
+                    color: "#EF4444",
+                  }}
+                >
                   Cancel Booking
                 </Button>
               </div>
@@ -300,14 +391,13 @@ const BookingDetails = () => {
           </Card>
         )}
 
-        {/* Final Payment Screen */}
-        {(bookingState === "COMPLETED" ||
-          bookingState === "FINAL_PAYMENT_PENDING" ||
-          bookingState === "CLOSED") && (
+        {/* Final Payment */}
+        {bookingData.bookingStatus === "Final-Payment-Pending" && (
           <Card elevation="medium">
             <h3 className="heading-5" style={{ marginBottom: "16px" }}>
-              Invoice & Final Payment
+              Final Payment
             </h3>
+
             <div
               style={{
                 display: "flex",
@@ -315,104 +405,148 @@ const BookingDetails = () => {
                 marginBottom: "8px",
               }}
             >
-              <span className="body-muted">Total Price</span>
-              <span>₹{bookingData.agreedPrice}</span>
+              <span>Total Price</span>
+              <span>₹{bookingData.totalAmount}</span>
             </div>
+
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 marginBottom: "8px",
-                color: "var(--color-white)",
               }}
             >
               <span>Advance Paid</span>
-              <span>- ₹{bookingData.agreedPrice * 0.1}</span>
-            </div>
-            <hr
-              style={{ margin: "12px 0", borderColor: "var(--color-shade-70)" }}
-            />
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontWeight: "500" }}>Remaining Balance</span>
-              <span
-                className="heading-5"
-                style={{ color: "var(--color-white)" }}
-              >
-                ₹{bookingData.agreedPrice * 0.9}
-              </span>
+
+              <span>- ₹{bookingData.advanceAmount}</span>
             </div>
 
-            {bookingState !== "CLOSED" ? (
-              <Button
-                variant="primary"
-                style={{ width: "100%", marginTop: "24px" }}
-                onClick={handleFinalPayment}
-              >
-                Pay Remaining Amount
-              </Button>
-            ) : (
-              <div
-                style={{
-                  marginTop: "24px",
-                  padding: "12px",
-                  backgroundColor: "var(--color-forest)",
-                  border: "1px solid var(--color-shade-70)",
-                  borderRadius: "8px",
-                  textAlign: "center",
-                }}
-              >
-                <p style={{ color: "var(--color-white)", fontWeight: 500 }}>
-                  Fully Paid
-                </p>
-              </div>
-            )}
+            <hr
+              style={{
+                margin: "12px 0",
+                borderColor: "var(--color-shade-70)",
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span style={{ fontWeight: "500" }}>Remaining Amount</span>
+
+              <span className="heading-5">₹{bookingData.remainingAmount}</span>
+            </div>
+
+            <Button
+              variant="primary"
+              style={{
+                width: "100%",
+                marginTop: "24px",
+              }}
+              onClick={handleFinalPayment}
+            >
+              Pay Remaining Amount
+            </Button>
           </Card>
         )}
 
-        {/* Dev Controls */}
-        <div
+        {/* Completed */}
+        {bookingData.bookingStatus === "Completed" && (
+          <Card elevation="medium">
+            <div
+              style={{
+                padding: "16px",
+                borderRadius: "8px",
+                textAlign: "center",
+                backgroundColor: "var(--color-forest)",
+              }}
+            >
+              <h3 className="heading-5" style={{ marginBottom: "8px" }}>
+                Booking Completed
+              </h3>
+
+              <p className="body-muted">All payments completed successfully.</p>
+            </div>
+          </Card>
+        )}
+
+        {/* Cancelled */}
+        {bookingData.bookingStatus === "Cancelled" && (
+          <Card elevation="medium">
+            <div
+              style={{
+                padding: "16px",
+                borderRadius: "8px",
+                textAlign: "center",
+                border: "1px solid #EF4444",
+              }}
+            >
+              <h3
+                className="heading-5"
+                style={{
+                  marginBottom: "8px",
+                  color: "#EF4444",
+                }}
+              >
+                Booking Cancelled
+              </h3>
+
+              <p className="body-muted">This booking has been cancelled.</p>
+            </div>
+          </Card>
+        )}
+
+        {/* Dev Panel */}
+        {/* <div
           style={{
             border: "1px dashed #444",
             padding: "8px",
             marginTop: "40px",
           }}
         >
-          <p style={{ fontSize: "10px", color: "#888" }}>
-            Dev Test Panel (Booking Status):
+          <p
+            style={{
+              fontSize: "10px",
+              color: "#888",
+            }}
+          >
+            Dev Test Panel
           </p>
-          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-            <button
-              onClick={() => setBookingState("PENDING_PAYMENT")}
-              style={{ fontSize: "10px" }}
-            >
-              PENDING_PAYMENT
+
+          <div
+            style={{
+              display: "flex",
+              gap: "4px",
+              flexWrap: "wrap",
+            }}
+          >
+            <button onClick={() => setBookingState("Advance-Payment-Pending")}>
+              Advance-Payment-Pending
             </button>
-            <button
-              onClick={() => setBookingState("CONFIRMED")}
-              style={{ fontSize: "10px" }}
-            >
-              CONFIRMED
+
+            <button onClick={() => setBookingState("Confirmed")}>
+              Confirmed
             </button>
-            <button
-              onClick={() => setBookingState("IN_PROGRESS")}
-              style={{ fontSize: "10px" }}
-            >
-              IN_PROGRESS
+
+            <button onClick={() => setBookingState("In-Progress")}>
+              In-Progress
             </button>
-            <button
-              onClick={() => setBookingState("FINAL_PAYMENT_PENDING")}
-              style={{ fontSize: "10px" }}
-            >
-              FINAL_PAYMENT
+
+            <button onClick={() => setBookingState("Final-Payment-Pending")}>
+              Final-Payment-Pending
             </button>
-            <button
-              onClick={() => setBookingState("CLOSED")}
-              style={{ fontSize: "10px" }}
-            >
-              CLOSED
+
+            <button onClick={() => setBookingState("Completed")}>
+              Completed
+            </button>
+
+            <button onClick={() => setBookingState("Cancelled")}>
+              Cancelled
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
