@@ -74,7 +74,7 @@ const addService = async (service) => {
 const deleteService = async (sid) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_URL}/provider/services/?sid=${sid}`, {
+    const response = await fetch(`${API_URL}/provider/services/?serviceId=${sid}`, {
       method: "DELETE",
       headers: {
         role: localStorage.getItem("userRole"),
@@ -94,10 +94,13 @@ const deleteService = async (sid) => {
 
 const updateService = async (pid, sid, service) => {
   try {
-    const response = await fetch(`${API_URL}/provider/${pid}/services/${sid}`, {
+    const token = await getToken()
+    const response = await fetch(`${API_URL}/provider/services?serviceId=${sid}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        role:localStorage.getItem("userRole"),
+        Authorization:`Bearer ${token}`
       },
       body: JSON.stringify(service),
     });

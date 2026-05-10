@@ -275,7 +275,7 @@ const BookingDetails = () => {
               </div>
             )}
 
-            {(booking.bookingStatus === "Completed" ||
+            {(
               booking.bookingStatus === "Final-Payment-Pending") && (
               <div
                 style={{

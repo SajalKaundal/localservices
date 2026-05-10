@@ -51,19 +51,69 @@ const MyBookings = () => {
                     <td>{b.providerId.name}</td>
                     <td>{b.createdAt.slice(0, 10)}</td>
                     <td>
-                      <Badge>
-                        {b.bookingStatus === "in-progress"
-                          ? "In Progress"
-                          : b.bookingStatus}
+                    {b.bookingStatus === "Advance-Payment-Pending" ||
+                    b.bookingStatus === "Final-Payment-Pending" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(245, 158, 11, 0.2)",
+                          color: "#F59E0B",
+                        }}
+                      >
+                        Payment Pending
                       </Badge>
-                    </td>
+                    ) : b.bookingStatus === "Confirmed" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(54, 244, 164, 0.2)",
+                          color: "var(--color-neon-green)",
+                        }}
+                      >
+                        Upcoming
+                      </Badge>
+                    ) : b.bookingStatus === "In-Progress" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(59, 130, 246, 0.2)",
+                          color: "#60A5FA",
+                        }}
+                      >
+                        In Progress
+                      </Badge>
+                    ) : b.bookingStatus === "Completed" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                          color: "#FFFFFF",
+                        }}
+                      >
+                        Completed
+                      </Badge>
+                    ) : b.bookingStatus === "Cancelled" ? (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(239, 68, 68, 0.2)",
+                          color: "#EF4444",
+                        }}
+                      >
+                        Cancelled
+                      </Badge>
+                    ) : (
+                      <Badge
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                        }}
+                      >
+                        Unknown
+                      </Badge>
+                    )}
+                  </td>
                     <td>
                       ₹
-                      {b.paymentStatus === "pending"
-                        ? b.advanceAmount || (b.totalAmount * 0.1)
-                        : b.paymentStatus === "partial"
-                          ? b.remainingAmount || (b.totalAmount * 0.9)
-                          : b.totalAmount || 0}
+                      {b.bookingStatus === "Advance-Payment-Pending"
+                        ? b.advanceAmount 
+                        : b.paymentStatus === "Final-Payment-Pending"
+                          ? b.remainingAmount 
+                          : 0}
                     </td>
                     <td>
                       <Button

@@ -34,7 +34,7 @@ const EditService = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateService("69f36e3d65de75f0df8f8e7d", id, formData);
+      await updateService(id, formData);
       alert("Data Updated Successfully")
       // setFormData(service);
     } catch (err) {
