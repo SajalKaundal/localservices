@@ -7,6 +7,8 @@ import {
   loginWithGoogle as svcLoginWithGoogle,
   logoutUser as svcLogoutUser
 } from '../services/authService';
+import { auth } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -14,7 +16,32 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Sync auth state with Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        const idToken = await user.getIdToken();
+        setToken(idToken);
+        localStorage.setItem('token', idToken);
+      } else {
+        setCurrentUser(null);
+        setToken(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        if (!localStorage.getItem('userRole')) {
+          setUserRole(null);
+        }
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Sync logout across tabs
   useEffect(() => {
@@ -38,30 +65,35 @@ export const AuthProvider = ({ children }) => {
   const loginConsumer = async (email, password) => {
     const res = await svcLoginConsumer(email, password);
     setRoleLocally(res.role);
+    setToken(res.token);
     return res;
   };
 
   const loginProvider = async (email, password) => {
     const res = await svcLoginProvider(email, password);
-    setRoleLocally(res.role,);
+    setRoleLocally(res.role);
+    setToken(res.token);
     return res;
   };
 
   const signupConsumer = async (email, password, name) => {
     const res = await svcSignupConsumer(email, password, name);
     setRoleLocally(res.role);
+    setToken(res.token);
     return res;
   };
 
   const signupProvider = async (email, password, name) => {
     const res = await svcSignupProvider(email, password, name);
     setRoleLocally(res.role);
+    setToken(res.token);
     return res;
   };
 
   const loginWithGoogle = async (role) => {
     const res = await svcLoginWithGoogle(role);
     setRoleLocally(res.role);
+    setToken(res.token);
     return res;
   };
 
@@ -79,12 +111,16 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       setUserRole(null);
       setToken(null);
+      setCurrentUser(null);
     }
   };
 
   const value = {
+    currentUser,
     userRole,
     token,
+    isAuthenticated: !!currentUser || !!token,
+    isLoading,
     loginConsumer,
     loginProvider,
     signupConsumer,

@@ -17,5 +17,5 @@ export const waitForAuth = () => {
 export const getToken = async () => {
   const user = auth.currentUser || (await waitForAuth());
 
-  return await user.getIdToken(true);
+  return await user.getIdToken();
 };

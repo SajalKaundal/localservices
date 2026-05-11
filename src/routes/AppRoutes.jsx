@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
+import ProtectedRoute from '../components/common/ProtectedRoute';
 
 import LandingPage from '../pages/public/LandingPage';
 import CategoriesPage from '../pages/public/CategoriesPage';
@@ -54,28 +55,33 @@ const AppRoutes = () => {
       </Route>
       
       <Route element={<DashboardLayout />}>
-        <Route path="/consumer/dashboard" element={<ConsumerDashboard />} />
-        <Route path="/consumer/bookings" element={<MyBookings />} />
-        <Route path="/consumer/bookings/:id" element={<BookingDetails />} />
-        {/* Wait, the code in BookingFlow routes to /consumer/booking/:id. Let me adjust it to match. */}
-        <Route path="/consumer/booking/:id" element={<BookingDetails />} />
-        <Route path="/consumer/messages" element={<Messaging />} />
-        <Route path="/consumer/payments" element={<Payments />} />
-        <Route path="/consumer/profile" element={<ConsumerProfile />} />
-        <Route path="/consumer/profile/edit" element={<EditConsumerProfile />} />
-        <Route path="/consumer/requests" element={<Requests />} />
+        {/* Consumer Routes */}
+        <Route element={<ProtectedRoute allowedRole="user" />}>
+          <Route path="/consumer/dashboard" element={<ConsumerDashboard />} />
+          <Route path="/consumer/bookings" element={<MyBookings />} />
+          <Route path="/consumer/bookings/:id" element={<BookingDetails />} />
+          <Route path="/consumer/booking/:id" element={<BookingDetails />} />
+          <Route path="/consumer/messages" element={<Messaging />} />
+          <Route path="/consumer/payments" element={<Payments />} />
+          <Route path="/consumer/profile" element={<ConsumerProfile />} />
+          <Route path="/consumer/profile/edit" element={<EditConsumerProfile />} />
+          <Route path="/consumer/requests" element={<Requests />} />
+        </Route>
         
-        <Route path="/provider/dashboard" element={<ProviderDashboard />} />
-        <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
-        <Route path="/provider/services" element={<ManageServices />} />
-        <Route path="/provider/services/add" element={<AddService />} />
-        <Route path="/provider/services/edit/:id" element={<EditService />} />
-        <Route path="/provider/earnings" element={<ProviderEarnings />} />
-        <Route path="/provider/requests" element={<BookingRequests />} />
-        <Route path="/provider/jobs" element={<MyJobs />} />
-        <Route path="/provider/job/:id" element={<ProviderBookingDetails />} />
-        <Route path="/provider/profile" element={<ProviderProfile />} />
-        <Route path="/provider/profile/edit" element={<EditProviderProfile />} />
+        {/* Provider Routes */}
+        <Route element={<ProtectedRoute allowedRole="provider" />}>
+          <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+          <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
+          <Route path="/provider/services" element={<ManageServices />} />
+          <Route path="/provider/services/add" element={<AddService />} />
+          <Route path="/provider/services/edit/:id" element={<EditService />} />
+          <Route path="/provider/earnings" element={<ProviderEarnings />} />
+          <Route path="/provider/requests" element={<BookingRequests />} />
+          <Route path="/provider/jobs" element={<MyJobs />} />
+          <Route path="/provider/job/:id" element={<ProviderBookingDetails />} />
+          <Route path="/provider/profile" element={<ProviderProfile />} />
+          <Route path="/provider/profile/edit" element={<EditProviderProfile />} />
+        </Route>
       </Route>
 
       <Route element={<AdminLayout />}>

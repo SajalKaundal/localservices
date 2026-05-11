@@ -17,6 +17,7 @@ const syncUserWithBackend = async ({
   name,
   email,
   profileImage,
+  token,
 }) => {
   const response = await fetch(
     `${API_URL}/auth/register`,
@@ -24,6 +25,7 @@ const syncUserWithBackend = async ({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
       },
 
       body: JSON.stringify({
@@ -120,6 +122,8 @@ export const signupProvider = async (
 
   await sendEmailVerification(user);
 
+  const initialToken = await user.getIdToken();
+
   // create provider in backend
   await syncUserWithBackend({
     uid: user.uid,
@@ -127,6 +131,7 @@ export const signupProvider = async (
     name,
     email,
     profileImage: user.photoURL,
+    token: initialToken,
   });
 
   // refresh token after custom claims
@@ -160,6 +165,8 @@ export const signupConsumer = async (
 
   await sendEmailVerification(user);
 
+  const initialToken = await user.getIdToken();
+
   // create user in backend
   await syncUserWithBackend({
     uid: user.uid,
@@ -167,6 +174,7 @@ export const signupConsumer = async (
     name,
     email,
     profileImage: user.photoURL,
+    token: initialToken,
   });
 
   // refresh token after custom claims
@@ -195,6 +203,8 @@ export const loginWithGoogle = async (
 
   const user = userCredential.user;
 
+  const initialToken = await user.getIdToken();
+
   // sync with backend
   await syncUserWithBackend({
     uid: user.uid,
@@ -202,6 +212,7 @@ export const loginWithGoogle = async (
     name: user.displayName,
     email: user.email,
     profileImage: user.photoURL,
+    token: initialToken,
   });
 
   // refresh token after claims
