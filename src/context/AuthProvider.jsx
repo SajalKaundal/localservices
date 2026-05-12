@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   loginConsumer as svcLoginConsumer,
@@ -12,6 +11,7 @@ import { auth } from "../config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 
+const API_URL = import.meta.env.VITE_API_URL;
 export const AuthProvider = ({ children }) => {
   // console.log(children)
   const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
         const idToken = await user.getIdToken();
         setToken(idToken);
         localStorage.setItem("token", idToken);
+        // await getUser(idToken);
       } else {
         setCurrentUser(null);
         setToken(null);

@@ -5,6 +5,7 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import './LandingPage.css';
+import { useUser } from '../../context/UserContext';
 
 const categories = [
   { id: 1, name: 'Home Cleaning', image: './images/HouseCleaning.jpg', desc: 'Professional deep cleaning & tidying for your entire home.' },
@@ -28,7 +29,8 @@ const LandingPage = () => {
       navigate('/provider/dashboard');
     }
   }, [navigate]);
-
+const {user} = useUser()
+  console.log(user)
   return (
     <div className="landing-page">
       {/* Hero Section */}

@@ -1,62 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '../ui/Button';
-import { useAuth } from '../../context/AuthContext';
-import './Navbar.css';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "../ui/Button";
+import { useAuth } from "../../context/AuthContext";
+import "./Navbar.css";
+import { useUser } from "../../context/UserContext";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const { userRole, logout } = useAuth();
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+  const { user, profileLoading } = useUser();
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="container navbar-container">
-        <Link to={userRole === 'provider' ? '/provider/dashboard' : '/'} className="navbar-brand">
+        <Link
+          to={userRole === "provider" ? "/provider/dashboard" : "/"}
+          className="navbar-brand"
+        >
           <span className="brand-text">Local</span>
           <span className="brand-accent">Serve</span>
         </Link>
-        
+
         <div className="navbar-links">
-          {userRole === 'user' && (
+          {userRole === "user" && (
             <>
-              <Link to="/consumer/dashboard" className="nav-link" style={{color: 'var(--color-neon-green)'}}>My Dashboard</Link>
-              <Link to="/consumer/bookings" className="nav-link">My Bookings</Link>
-              <Link to="/consumer/profile" className="nav-link">Account Settings</Link>
+              <Link
+                to="/consumer/dashboard"
+                className="nav-link"
+                style={{ color: "var(--color-neon-green)" }}
+              >
+                My Dashboard
+              </Link>
+              <Link to="/consumer/bookings" className="nav-link">
+                My Bookings
+              </Link>
+              <Link to="/consumer/profile" className="nav-link">
+                Account Settings
+              </Link>
             </>
           )}
-          {userRole === 'provider' && (
+          {userRole === "provider" && (
             <>
-              <Link to="/provider/dashboard" className="nav-link" style={{color: 'var(--color-neon-green)'}}>Provider Dashboard</Link>
-              <Link to="/provider/jobs" className="nav-link">Active Jobs</Link>
-              <Link to="/provider/profile" className="nav-link">Account Settings</Link>
+              <Link
+                to="/provider/dashboard"
+                className="nav-link"
+                style={{ color: "var(--color-neon-green)" }}
+              >
+                Provider Dashboard
+              </Link>
+              <Link to="/provider/jobs" className="nav-link">
+                Active Jobs
+              </Link>
+              <Link to="/provider/profile" className="nav-link">
+                Account Settings
+              </Link>
             </>
           )}
         </div>
 
         <div className="navbar-actions">
-          <Button variant="ghost" onClick={() => navigate('/admin/dashboard')} style={{color: 'var(--color-shade-50)', marginRight: '8px'}}>Admin</Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/admin/dashboard")}
+            style={{ color: "var(--color-shade-50)", marginRight: "8px" }}
+          >
+            Admin
+          </Button>
           {userRole ? (
-            <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-              <div className="avatar" style={{width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-dark-forest)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '500', border: '1px solid var(--color-neon-green)'}}>
-                {userRole === 'provider' ? 'P' : 'C'}
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div
+                className="avatar"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--color-dark-forest)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "500",
+                  border: "1px solid var(--color-neon-green)",
+                }}
+              >
+                {profileLoading ? (
+                  ""
+                ) : user?.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  `${user?.name?.charAt(0).toUpperCase()}`
+                )}
               </div>
-              <Button variant="ghost" onClick={async () => {
-                await logout();
-                navigate('/');
-              }}>Log out</Button>
+              <Button
+                variant="ghost"
+                onClick={async () => {
+                  await logout();
+                  navigate("/");
+                }}
+              >
+                Log out
+              </Button>
             </div>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => navigate('/auth')}>Log in</Button>
+              <Button variant="ghost" onClick={() => navigate("/auth")}>
+                Log in
+              </Button>
               {/* <Button variant="primary" onClick={() => navigate('/auth')}>Start for free</Button> */}
             </>
           )}

@@ -1,36 +1,143 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import imageCompression from 'browser-image-compression';
 
 const EditProviderProfile = () => {
   const navigate = useNavigate();
+  const { user, profileLoading } = useUser();
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const [isAvailable, setIsAvailable] = useState(user?.isAvailable ?? true);
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const options = {
+          maxSizeMB: 0.05, // 50 KB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+        const compressedFile = await imageCompression(file, options);
+        const imageUrl = URL.createObjectURL(compressedFile);
+        setProfileImagePreview(imageUrl);
+      } catch (error) {
+        console.error("Error compressing image:", error);
+      }
+    }
+  };
+
+  if (profileLoading) {
+    return <div className="loading-state">Loading profile...</div>;
+  }
+
+  const currentImage = profileImagePreview || user?.profileImage;
+  const nameInitial = user?.name?.charAt(0) || "P";
+
   return (
     <div className="provider-page">
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
         <h2 className="heading-3">Edit Profile</h2>
-        <Button variant="ghost" onClick={() => navigate('/provider/profile')}>Cancel</Button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button variant="ghost" onClick={() => navigate('/provider/profile')}>Cancel</Button>
+          <Button variant="primary" onClick={() => navigate('/provider/profile')}>Save Changes</Button>
+        </div>
       </div>
       
       <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px'}}>
-        <Card elevation="medium">
-          <h3 className="heading-5" style={{marginBottom: '16px'}}>Public Information</h3>
-          <Input label="Business Name" defaultValue="CoolBreeze AC" />
-          <div style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px'}}>
-            <label className="input-label">Bio</label>
-            <textarea 
-              className="input-field focus-ring" 
-              rows="4" 
-              defaultValue="We provide top-notch air conditioning services. Whether you need a deep clean, gas refill, or full installation, our verified experts are here to help."
-              style={{resize: 'vertical', width: '100%', padding: '10px 14px', backgroundColor: '#0F172A', border: '1px solid #334155', borderRadius: '8px', color: '#F8FAFC', fontSize: '15px'}}
-            ></textarea>
-          </div>
-          <Input label="Years of Experience" defaultValue="5" />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <Button variant="primary" onClick={() => navigate('/provider/profile')}>Save Changes</Button>
-          </div>
-        </Card>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
+          <Card elevation="medium">
+            <h3 className="heading-5" style={{marginBottom: '24px'}}>Profile Photo</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+              <div 
+                style={{
+                  width: "96px", 
+                  height: "96px", 
+                  borderRadius: "50%", 
+                  backgroundColor: "var(--color-dark-forest)",
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid var(--color-shade-70)"
+                }}
+              >
+                {currentImage ? (
+                  <img src={currentImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span style={{ color: "var(--color-shade-50)", fontSize: "32px", fontWeight: "500" }}>
+                    {nameInitial}
+                  </span>
+                )}
+              </div>
+              <div>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  ref={fileInputRef} 
+                  style={{ display: "none" }} 
+                  onChange={handleImageChange}
+                />
+                <Button 
+                  variant="secondary" 
+                  type="button" 
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Change Photo
+                </Button>
+                <p className="body-muted" style={{ fontSize: "12px", marginTop: "8px" }}>
+                  Recommended: Square image, max 2MB.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card elevation="medium">
+            <h3 className="heading-5" style={{marginBottom: '16px'}}>Public Information</h3>
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px'}}>
+              <Input label="Provider Name / Business Name" defaultValue={user?.name || ""} />
+              <Input label="Email" defaultValue={user?.email || ""} disabled />
+              <Input label="Phone Number" defaultValue={user?.phone || ""} />
+              <Input label="Years of Experience" defaultValue={user?.experience || ""} />
+              <Input label="Price Per Hour ($)" defaultValue={user?.pricePerHour || ""} type="number" />
+            </div>
+
+            <div style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px'}}>
+              <label className="input-label">Bio</label>
+              <textarea 
+                className="input-field focus-ring" 
+                rows="4" 
+                defaultValue={user?.bio || "We provide top-notch services. Our verified experts are here to help."}
+                style={{resize: 'vertical', width: '100%', padding: '10px 14px', backgroundColor: 'var(--color-dark-forest)', border: '1px solid var(--color-shade-70)', borderRadius: '8px', color: '#FFFFFF', fontSize: '15px'}}
+              ></textarea>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', backgroundColor: 'var(--color-dark-forest)', borderRadius: '8px', border: '1px solid var(--color-shade-70)' }}>
+              <div>
+                <h4 style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: '500', marginBottom: '4px' }}>Availability Status</h4>
+                <p className="body-muted" style={{ fontSize: '13px' }}>Toggle to show if you are currently taking new requests.</p>
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type="checkbox" 
+                    className="sr-only" 
+                    checked={isAvailable}
+                    onChange={() => setIsAvailable(!isAvailable)}
+                    style={{ opacity: 0, width: 0, height: 0 }}
+                  />
+                  <div style={{ display: 'block', backgroundColor: isAvailable ? 'var(--color-neon-green)' : 'var(--color-shade-60)', width: '48px', height: '28px', borderRadius: '9999px', transition: 'background-color 0.2s' }}></div>
+                  <div style={{ position: 'absolute', left: isAvailable ? '22px' : '2px', top: '2px', backgroundColor: 'white', width: '24px', height: '24px', borderRadius: '50%', transition: 'left 0.2s, transform 0.2s' }}></div>
+                </div>
+              </label>
+            </div>
+          </Card>
+        </div>
 
         <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
           <Card elevation="medium">
