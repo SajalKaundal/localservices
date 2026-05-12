@@ -7,9 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const UserProvider = ({ children }) => {
   const { currentUser, token, userRole, isLoading } = useAuth();
 
-  const [user, setUser] = useState({
-    name: "H",
-  });
+  const [user, setUser] = useState({});
   const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
@@ -40,7 +38,7 @@ export const UserProvider = ({ children }) => {
         if (!response.ok) {
           throw new Error(data.message);
         }
-        console.log(data)
+        // console.log(data)
         setUser(data.profile);
       } catch (err) {
         console.error(err);

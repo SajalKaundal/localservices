@@ -4,7 +4,7 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
-import imageCompression from 'browser-image-compression';
+import imageCompression from "browser-image-compression";
 
 const EditConsumerProfile = () => {
   const navigate = useNavigate();
@@ -15,12 +15,19 @@ const EditConsumerProfile = () => {
   const [addresses, setAddresses] = useState([]);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const fileInputRef = useRef(null);
-
+  const [formData, setFormData] = useState({});
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [deletedAddress, setDeletedAddress] = useState([]);
   const handleAddAddress = () => {
     if (newTitle.trim() && newAddress.trim()) {
       setAddresses([
         ...addresses,
-        { id: Date.now(), title: newTitle, address: newAddress },
+        {
+          _id: new Date(),
+          title: newTitle,
+          address: newAddress,
+        },
       ]);
       setIsAdding(false);
       setNewTitle("");
@@ -30,6 +37,10 @@ const EditConsumerProfile = () => {
 
   const handleDeleteAddress = (id) => {
     setAddresses(addresses.filter((addr) => addr.id !== id));
+  };
+
+  const handleDeleteSavedAddress = (id) => {
+    setDeletedAddress((prev) => prev.push(id));
   };
 
   const handleImageChange = async (e) => {
@@ -44,24 +55,68 @@ const EditConsumerProfile = () => {
         const compressedFile = await imageCompression(file, options);
         const imageUrl = URL.createObjectURL(compressedFile);
         setProfileImagePreview(imageUrl);
+        setFormData((prev) => ({
+          ...prev,
+          [e.target.name]: compressedFile,
+        }));
       } catch (error) {
         console.error("Error compressing image:", error);
       }
     }
   };
 
+  const handleChange = (e) => {
+    const key = e.target.name;
+    const value = e.target.value.trim();
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleNameChange = (e) => {
+    const key = e.target.name;
+    const value = e.target.value;
+    let combinedName;
+    if (key === "firstName") {
+      combinedName = `${value} ${lastName}`;
+    } else if (key === "lastName") {
+      combinedName = `${firstName} ${value}`;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      name: combinedName,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+    console.log(deletedAddress);
+    console.log(addresses);
+  };
+
   useEffect(() => {
     if (user?.savedAddress) {
-      setAddresses(user.savedAddress);
+      const getAddress = async () => {
+        setAddresses(user.savedAddress);
+      };
+      getAddress();
+    }
+    if (user?.name) {
+      const getName = async () => {
+        const name = user.name.split(" ");
+    
+        setFirstName(name[0]);
+        setLastName(name[1] || "");
+      };
+      getName();
     }
   }, [user]);
 
   if (profileLoading) {
     return <div className="loading-state">Loading requests...</div>;
   } else {
-    const name = user?.name?.split(" ") || ["", ""];
-    const firstName = name[0];
-    const lastName = name[1] || "";
     const currentImage = profileImagePreview || user?.profileImage;
 
     return (
@@ -82,57 +137,83 @@ const EditConsumerProfile = () => {
 
         <Card elevation="medium" style={{ marginBottom: "24px" }}>
           <form
+            onSubmit={handleSubmit}
             style={{ display: "flex", flexDirection: "column", gap: "24px" }}
           >
             <div>
               <h3 className="heading-5" style={{ marginBottom: "16px" }}>
                 Profile Photo
               </h3>
-              <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                <div 
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "24px" }}
+              >
+                <div
                   style={{
-                    width: "80px", 
-                    height: "80px", 
-                    borderRadius: "50%", 
+                    width: "80px",
+                    height: "80px",
+                    borderRadius: "50%",
                     backgroundColor: "var(--color-dark-forest)",
                     overflow: "hidden",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "1px solid var(--color-shade-70)"
+                    border: "1px solid var(--color-shade-70)",
                   }}
                 >
                   {currentImage ? (
-                    <img src={currentImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img
+                      src={currentImage}
+                      alt="Profile"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
                   ) : (
-                    <span style={{ color: "var(--color-shade-50)", fontSize: "24px" }}>
+                    <span
+                      style={{
+                        color: "var(--color-shade-50)",
+                        fontSize: "24px",
+                      }}
+                    >
                       {firstName?.charAt(0) || "U"}
                     </span>
                   )}
                 </div>
                 <div>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    ref={fileInputRef} 
-                    style={{ display: "none" }} 
+                  <input
+                    name="profileImage"
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
                     onChange={handleImageChange}
                   />
-                  <Button 
-                    variant="secondary" 
-                    type="button" 
+                  <Button
+                    variant="secondary"
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     Change Photo
                   </Button>
-                  <p className="body-muted" style={{ fontSize: "12px", marginTop: "8px" }}>
+                  <p
+                    className="body-muted"
+                    style={{ fontSize: "12px", marginTop: "8px" }}
+                  >
                     Recommended: Square image, max 50KB.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div style={{ height: "1px", backgroundColor: "var(--color-shade-70)", margin: "8px 0" }}></div>
+            <div
+              style={{
+                height: "1px",
+                backgroundColor: "var(--color-shade-70)",
+                margin: "8px 0",
+              }}
+            ></div>
 
             <div>
               <h3 className="heading-5" style={{ marginBottom: "16px" }}>
@@ -145,18 +226,43 @@ const EditConsumerProfile = () => {
                   gap: "16px",
                 }}
               >
-                <Input label="First Name" defaultValue={firstName} />
-                <Input label="Last Name" defaultValue={lastName} />
-                <Input label="Email" defaultValue={user?.email || ""} disabled />
-                <Input label="Phone" defaultValue={user?.phone || ""} />
+                <Input
+                  name="firstName"
+                  label="First Name"
+                  defaultValue={firstName}
+                  onChange={handleNameChange}
+                />
+                <Input
+                  name="lastName"
+                  label="Last Name"
+                  defaultValue={lastName}
+                  onChange={handleNameChange}
+                />
+                <Input
+                  label="Email"
+                  defaultValue={user?.email || ""}
+                  disabled
+                />
+                <Input
+                  name="phone"
+                  label="Phone"
+                  defaultValue={user?.phone || ""}
+                  onChange={handleChange}
+                />
               </div>
             </div>
-            
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "8px",
+              }}
+            >
               <Button
                 variant="primary"
-                type="button"
-                onClick={() => navigate("/consumer/profile")}
+                type="submit"
+                // onClick={() => navigate("/consumer/profile")}
               >
                 Save Changes
               </Button>
@@ -171,21 +277,21 @@ const EditConsumerProfile = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {addresses.length > 0
-              ? addresses.map((addr) => (
-                  <Card key={addr._id} elevation="subtle">
-                    <h5 className="heading-6">{addr.title}</h5>
+            {user?.address?.length > 0
+              ? addresses.map((a) => (
+                  <Card key={a._id} elevation="subtle">
+                    <h5 className="heading-6">{a.title}</h5>
                     <p className="body-muted" style={{ marginTop: "4px" }}>
-                      {addr.address}
+                      {a.address}
                     </p>
                     <div style={{ marginTop: "12px" }}>
-                      <Button variant="ghost" style={{ padding: "4px 8px" }}>
+                      {/* <Button variant="ghost" style={{ padding: "4px 8px" }}>
                         Edit
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="ghost"
                         style={{ padding: "4px 8px", color: "#EF4444" }}
-                        onClick={() => handleDeleteAddress(addr._id)}
+                        onClick={() => handleDeleteSavedAddress(a._id)}
                       >
                         Delete
                       </Button>
@@ -193,6 +299,27 @@ const EditConsumerProfile = () => {
                   </Card>
                 ))
               : "No Saved Address"}
+
+            {addresses.map((a) => (
+              <Card key={a._id} elevation="subtle">
+                <h5 className="heading-6">{a.title}</h5>
+                <p className="body-muted" style={{ marginTop: "4px" }}>
+                  {a.address}
+                </p>
+                <div style={{ marginTop: "12px" }}>
+                  {/* <Button variant="ghost" style={{ padding: "4px 8px" }}>
+                        Edit
+                      </Button> */}
+                  <Button
+                    variant="ghost"
+                    style={{ padding: "4px 8px", color: "#EF4444" }}
+                    onClick={() => handleDeleteAddress(a._id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Card>
+            ))}
 
             {isAdding ? (
               <Card

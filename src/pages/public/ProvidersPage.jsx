@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -15,16 +15,27 @@ const allProvidersList = [
 
 const ProvidersPage = () => {
   const navigate = useNavigate();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
     <div className="service-listing-page">
       <div className="container listing-layout">
         
         {/* Filters Sidebar */}
-        <aside className="filters-sidebar">
+        <aside className={`filters-sidebar ${isFilterOpen ? 'open' : ''}`}>
           <Card elevation="subtle" className="filters-card">
-            <h3 className="heading-5" style={{marginBottom: '16px'}}>Filters</h3>
+            <h3 className="heading-5" style={{marginBottom: '16px'}}>Filters & Sorting</h3>
             
+            <div className="filter-group">
+              <h4 className="heading-6 body-muted">Sort By</h4>
+              <select className="filter-select focus-ring" style={{marginBottom: '8px'}}>
+                <option>Recommended</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Rating: High to Low</option>
+              </select>
+            </div>
+
             <div className="filter-group">
               <h4 className="heading-6 body-muted">Category</h4>
               <select className="filter-select focus-ring" style={{marginBottom: '8px'}}>
@@ -49,16 +60,27 @@ const ProvidersPage = () => {
               <label><input type="checkbox" /> 4.0 & Above</label>
             </div>
             
-            <Button variant="secondary" style={{width: '100%', marginTop: '24px'}}>Apply Filters</Button>
+            <Button variant="secondary" style={{width: '100%', marginTop: '24px'}} onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
           </Card>
         </aside>
 
         {/* Listings */}
         <main className="listings-main">
-          <h1 className="heading-2" style={{marginBottom: '8px'}}>Top Providers</h1>
-          <p className="body-muted" style={{marginBottom: '24px'}}>Discover the best local professionals across all categories.</p>
+          <div className="sort-filter-container">
+            <div>
+              <h1 className="heading-2" style={{marginBottom: '8px'}}>Top Providers</h1>
+              <p className="body-muted" style={{marginBottom: '0'}}>Discover the best local professionals across all categories.</p>
+            </div>
+            <Button 
+              variant="outline" 
+              className="mobile-filter-toggle" 
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+            >
+              {isFilterOpen ? 'Hide Filters & Sorting' : 'Show Filters & Sorting'}
+            </Button>
+          </div>
           
-          <div className="providers-list">
+          <div className="providers-list" style={{marginTop: '24px'}}>
             {allProvidersList.map(provider => (
               <Card key={provider.id} className="listing-card" onClick={() => navigate(`/provider/${provider.id}`)}>
                 <div className="listing-card-left">

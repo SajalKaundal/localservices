@@ -82,6 +82,40 @@
   font-family: var(--font-display);
 }
 
+.sort-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.mobile-filter-toggle {
+  display: none;
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .filters-sidebar {
+    display: none;
+    margin-bottom: var(--space-6);
+  }
+
+  .filters-sidebar.open {
+    display: block;
+  }
+
+  .mobile-filter-toggle {
+    display: block;
+  }
+
+  .sort-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 @media (max-width: 640px) {
   .listing-card {
     flex-direction: column;

@@ -9,6 +9,7 @@ import { fetchProviders } from '../../services/publicServices';
 const ServiceListing = () => {
   const navigate = useNavigate();
   const [providers,setProviders] = useState([])
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   // const { categoryId } = useParams();
 
   useEffect(()=>{
@@ -24,7 +25,7 @@ const ServiceListing = () => {
       <div className="container listing-layout">
         
         {/* Filters Sidebar */}
-        <aside className="filters-sidebar">
+        <aside className={`filters-sidebar ${isFilterOpen ? 'open' : ''}`}>
           <Card elevation="subtle" className="filters-card">
             <h3 className="heading-5" style={{marginBottom: '16px'}}>Filters</h3>
             
@@ -49,14 +50,25 @@ const ServiceListing = () => {
                 <option>Rating: High to Low</option>
               </select>
             </div>
+            
+            <Button variant="secondary" style={{width: '100%', marginTop: '24px'}} onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
           </Card>
         </aside>
 
         {/* Listings */}
         <main className="listings-main">
-          <h1 className="heading-2" style={{marginBottom: '24px'}}>AC Repair Providers</h1>
+          <div className="sort-filter-container">
+            <h1 className="heading-2" style={{marginBottom: '8px'}}>AC Repair Providers</h1>
+            <Button 
+              variant="outline" 
+              className="mobile-filter-toggle" 
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+            >
+              {isFilterOpen ? 'Hide Filters & Sorting' : 'Show Filters & Sorting'}
+            </Button>
+          </div>
           
-          <div className="providers-list">
+          <div className="providers-list" style={{marginTop: '16px'}}>
             {providers.map(provider => (
               <Card key={provider._id} className="listing-card" onClick={() => navigate(`/provider/${provider._id}`)}>
                 <div className="listing-card-left">
