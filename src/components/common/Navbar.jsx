@@ -8,7 +8,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const { userRole, logout } = useAuth();
-
+  
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -57,7 +57,7 @@ const Navbar = () => {
           ) : (
             <>
               <Button variant="ghost" onClick={() => navigate('/auth')}>Log in</Button>
-              <Button variant="primary" onClick={() => navigate('/auth')}>Start for free</Button>
+              {/* <Button variant="primary" onClick={() => navigate('/auth')}>Start for free</Button> */}
             </>
           )}
         </div>

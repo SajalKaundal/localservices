@@ -86,7 +86,7 @@ const ProviderDetail = () => {
               <div className="services-list">
                 {provider.services &&
                   provider.services.map((s) => (
-                    <Card elevation="subtle" className="service-item-card">
+                    <Card elevation="subtle" className="service-item-card" key={s._id}>
                       <div>
                         <h4 className="heading-5">{s.name}</h4>
                         <p className="body-muted" style={{ marginTop: "4px" }}>

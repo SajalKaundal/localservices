@@ -23,6 +23,8 @@ const MyJobs = () => {
       }
     };
     getBookings();
+    const interval = setInterval(getBookings,30000)
+    return ()=>clearInterval(interval)
   }, []);
 
   return (

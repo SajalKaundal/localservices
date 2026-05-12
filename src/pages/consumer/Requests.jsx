@@ -9,7 +9,6 @@ import {
   sendTextMessage,
   sendProposal,
 } from "../../services/requestService";
-import { useAuth } from "../../context/AuthContext";
 import "./Requests.css";
 import { getStatusColor } from "../../utils/statusUtils";
 import MessageThread from "../../components/requests/MessageThread";
@@ -31,7 +30,6 @@ const Requests = () => {
   const messagesEndRef = useRef(null);
 
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const tabs = ["All", "Pending", "Negotiating", "Closed"];
 
@@ -47,7 +45,9 @@ const Requests = () => {
       }
     };
     getRequests();
-  }, [user]);
+    const interval = setInterval(getRequests, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAction = async (id, action, data = {}) => {
     if (action === "Accept") {

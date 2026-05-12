@@ -40,10 +40,10 @@ const BookingDetails = () => {
       description: `Advance Deposit for ${bookingData.serviceId.name}`,
       onSuccess: (txId) => {
         alert(`Payment successful! ID: ${txId}`);
-        setBookingData((prev) => ({
-          ...prev,
-          bookingStatus: "Confirmed",
-        }));
+        // setBookingData((prev) => ({
+        //   ...prev,
+        //   bookingStatus: "Confirmed",
+        // }));
       },
     });
   };
@@ -56,10 +56,10 @@ const BookingDetails = () => {
       description: `Remaining Balance for ${bookingData.serviceId.name}`,
       onSuccess: (txId) => {
         alert(`Payment successful! ID: ${txId}`);
-        setBookingData((prev) => ({
-          ...prev,
-          bookingStatus: "Completed",
-        }));
+        // setBookingData((prev) => ({
+        //   ...prev,
+        //   bookingStatus: "Completed",
+        // }));
       },
     });
   };
@@ -93,14 +93,15 @@ const BookingDetails = () => {
     const getBooking = async () => {
       try {
         const booking = await fetchUserBooking(id);
-
         setBookingData(booking);
       } catch (err) {
         console.error(err.message);
       }
     };
-
     getBooking();
+
+    const interval = setInterval(getBooking, 3000);
+    return () => clearInterval(interval);
   }, [id]);
 
   return (

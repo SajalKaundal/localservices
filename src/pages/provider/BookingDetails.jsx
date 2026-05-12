@@ -101,7 +101,7 @@ const BookingDetails = () => {
     try{
       const booking = await updateBookingStatus(id,action)
       console.log(booking)
-      setBooking(booking)
+      // setBooking(booking)
     }
     catch(err){
       console.error(err.message)
@@ -118,6 +118,8 @@ const BookingDetails = () => {
       }
     };
     getBooking();
+    const interval = setInterval(getBooking,3000)
+    return ()=> clearInterval(interval)
   }, [id]);
   return (
     <div className="provider-page">

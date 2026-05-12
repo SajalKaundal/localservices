@@ -43,6 +43,8 @@ const BookingRequests = () => {
       }
     };
     getRequests();
+    const interval = setInterval(getRequests,3000)
+    return ()=>clearInterval(interval)
   }, []);
 
   const handleAction = async (id, action, data = {}) => {
