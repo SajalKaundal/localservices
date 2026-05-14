@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
       <UserProvider>
-        <BrowserRouter basename="/localservices/">
+        <BrowserRouter basename="/">
           <App />
         </BrowserRouter>
       </UserProvider>
