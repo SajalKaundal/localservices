@@ -80,11 +80,11 @@ const ProviderProfile = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
               <div>
                 <p className="body-muted" style={{fontSize: '13px', marginBottom: '4px'}}>Years of Experience</p>
-                <p style={{fontSize: '18px', color: '#F8FAFC', fontWeight: '500'}}>{user?.experience || "0"}</p>
+                <p style={{fontSize: '18px', color: '#F8FAFC', fontWeight: '500'}}>{user.experience || "0"}</p>
               </div>
               <div>
                 <p className="body-muted" style={{fontSize: '13px', marginBottom: '4px'}}>Price Per Hour</p>
-                <p style={{fontSize: '18px', color: 'var(--color-neon-green)', fontWeight: '500'}}>${user?.pricePerHour || "0"}</p>
+                <p style={{fontSize: '18px', color: 'var(--color-neon-green)', fontWeight: '500'}}>₹{user?.pricePerHour || "0"}</p>
               </div>
             </div>
 
@@ -98,19 +98,68 @@ const ProviderProfile = () => {
         </div>
 
         <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
-          <Card elevation="medium">
+          {/* <Card elevation="medium">
             <h3 className="heading-5" style={{marginBottom: '16px'}}>Certifications</h3>
             <ul style={{color: 'var(--color-shade-30)', fontSize: '14px', lineHeight: '2'}}>
               <li>✓ HVAC Certified (2020)</li>
               <li>✓ EPA Section 608</li>
             </ul>
-          </Card>
+          </Card> */}
 
           <Card elevation="medium">
-            <h3 className="heading-5" style={{marginBottom: '16px'}}>Portfolio</h3>
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px'}}>
-              <div style={{aspectRatio: '1', backgroundColor: 'var(--color-dark-forest)', borderRadius: '8px'}}></div>
-              <div style={{aspectRatio: '1', backgroundColor: 'var(--color-dark-forest)', borderRadius: '8px'}}></div>
+            <h3 className="heading-5" style={{ marginBottom: "16px" }}>
+              Portfolio
+            </h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              {user.portfolio && user.portfolio.length > 0 ? (
+                user.portfolio.map((photo, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      aspectRatio: "1",
+                      backgroundColor: "var(--color-dark-forest)",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                      border: "1px solid var(--color-shade-70)",
+                    }}
+                  >
+                    <img
+                      src={photo.url}
+                      alt={`Portfolio ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div
+                    style={{
+                      aspectRatio: "1",
+                      backgroundColor: "var(--color-dark-forest)",
+                      borderRadius: "8px",
+                      border: "1px solid var(--color-shade-70)",
+                    }}
+                  ></div>
+                  <div
+                    style={{
+                      aspectRatio: "1",
+                      backgroundColor: "var(--color-dark-forest)",
+                      borderRadius: "8px",
+                      border: "1px solid var(--color-shade-70)",
+                    }}
+                  ></div>
+                </>
+              )}
             </div>
           </Card>
         </div>

@@ -5,9 +5,11 @@ import Button from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import imageCompression from "browser-image-compression";
+import { updateUser } from "../../services/userService";
 
 const EditConsumerProfile = () => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const { user, profileLoading } = useUser();
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -18,15 +20,17 @@ const EditConsumerProfile = () => {
   const [formData, setFormData] = useState({});
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [deletedAddress, setDeletedAddress] = useState([]);
+  const [deletedAddresses, setdeletedAddresses] = useState([]);
+  const [updating,setUpdating] = useState(false)
   const handleAddAddress = () => {
     if (newTitle.trim() && newAddress.trim()) {
       setAddresses([
         ...addresses,
         {
-          _id: new Date(),
+          id: new Date(),
           title: newTitle,
           address: newAddress,
+          isNew: true,
         },
       ]);
       setIsAdding(false);
@@ -35,12 +39,14 @@ const EditConsumerProfile = () => {
     }
   };
 
-  const handleDeleteAddress = (id) => {
-    setAddresses(addresses.filter((addr) => addr.id !== id));
-  };
-
-  const handleDeleteSavedAddress = (id) => {
-    setDeletedAddress((prev) => prev.push(id));
+  const handleDeleteAddress = (id, isNew) => {
+    if (!isNew) {
+      console.log(id);
+      setdeletedAddresses((prev) => [...prev, id]);
+      setAddresses(addresses.filter((addr) => addr._id !== id));
+    } else {
+      setAddresses(addresses.filter((addr) => addr.id !== id));
+    }
   };
 
   const handleImageChange = async (e) => {
@@ -89,33 +95,41 @@ const EditConsumerProfile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setUpdating(true)
     console.log(formData);
-    console.log(deletedAddress);
+    console.log(deletedAddresses);
     console.log(addresses);
+    const newAddress = addresses.filter((a) => a.isNew);
+    const user = await updateUser(formData, newAddress, deletedAddresses);
+    setUser(user);
+    setUpdating(false)
+    navigate("/consumer/profile");
   };
 
   useEffect(() => {
-    if (user?.savedAddress) {
+    if (user?.savedAddresses) {
       const getAddress = async () => {
-        setAddresses(user.savedAddress);
+        setAddresses(user.savedAddresses);
       };
       getAddress();
     }
     if (user?.name) {
       const getName = async () => {
         const name = user.name.split(" ");
-    
+
         setFirstName(name[0]);
         setLastName(name[1] || "");
       };
       getName();
     }
   }, [user]);
-
+  if(updating){
+     return <div className="loading-state">Updating profile...</div>;
+  }
   if (profileLoading) {
-    return <div className="loading-state">Loading requests...</div>;
+    return <div className="loading-state">Loading profile...</div>;
   } else {
     const currentImage = profileImagePreview || user?.profileImage;
 
@@ -277,9 +291,9 @@ const EditConsumerProfile = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {user?.address?.length > 0
+            {addresses.length > 0
               ? addresses.map((a) => (
-                  <Card key={a._id} elevation="subtle">
+                  <Card key={a._id || a.id} elevation="subtle">
                     <h5 className="heading-6">{a.title}</h5>
                     <p className="body-muted" style={{ marginTop: "4px" }}>
                       {a.address}
@@ -291,7 +305,9 @@ const EditConsumerProfile = () => {
                       <Button
                         variant="ghost"
                         style={{ padding: "4px 8px", color: "#EF4444" }}
-                        onClick={() => handleDeleteSavedAddress(a._id)}
+                        onClick={() =>
+                          handleDeleteAddress(a._id || a.id, a.isNew || false)
+                        }
                       >
                         Delete
                       </Button>
@@ -299,27 +315,6 @@ const EditConsumerProfile = () => {
                   </Card>
                 ))
               : "No Saved Address"}
-
-            {addresses.map((a) => (
-              <Card key={a._id} elevation="subtle">
-                <h5 className="heading-6">{a.title}</h5>
-                <p className="body-muted" style={{ marginTop: "4px" }}>
-                  {a.address}
-                </p>
-                <div style={{ marginTop: "12px" }}>
-                  {/* <Button variant="ghost" style={{ padding: "4px 8px" }}>
-                        Edit
-                      </Button> */}
-                  <Button
-                    variant="ghost"
-                    style={{ padding: "4px 8px", color: "#EF4444" }}
-                    onClick={() => handleDeleteAddress(a._id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </Card>
-            ))}
 
             {isAdding ? (
               <Card

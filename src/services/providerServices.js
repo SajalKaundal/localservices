@@ -74,13 +74,16 @@ const addService = async (service) => {
 const deleteService = async (sid) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_URL}/provider/services/?serviceId=${sid}`, {
-      method: "DELETE",
-      headers: {
-        role: localStorage.getItem("userRole"),
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_URL}/provider/services/?serviceId=${sid}`,
+      {
+        method: "DELETE",
+        headers: {
+          role: localStorage.getItem("userRole"),
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
     const data = await response.json();
     if (!response.ok) {
       throw new Error("Service not Deleted");
@@ -94,16 +97,19 @@ const deleteService = async (sid) => {
 
 const updateService = async (pid, sid, service) => {
   try {
-    const token = await getToken()
-    const response = await fetch(`${API_URL}/provider/services?serviceId=${sid}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        role:localStorage.getItem("userRole"),
-        Authorization:`Bearer ${token}`
+    const token = await getToken();
+    const response = await fetch(
+      `${API_URL}/provider/services?serviceId=${sid}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          role: localStorage.getItem("userRole"),
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(service),
       },
-      body: JSON.stringify(service),
-    });
+    );
     const data = await response.json();
     return data.service;
   } catch (err) {
@@ -156,30 +162,83 @@ const fetchProviderBooking = async (bookingId) => {
   }
 };
 
-const updateBookingStatus = async (bookingId,action) =>{
-  try{
-    const token = await getToken()
-    const response = await fetch(`${API_URL}/provider/booking/update`,{
-      method:'PATCH',
-      headers:{
-        "Content-Type":"application/json",
-        role:localStorage.getItem("userRole"),
-        Authorization:`Bearer ${token}`
+const updateBookingStatus = async (bookingId, action) => {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/provider/booking/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
       },
-      body:JSON.stringify({
-        bookingId,action
-      }) 
-    })
-    const data = await response.json()
-    if(!data.success){
-      throw new Error("Unable to Update the booking status")
+      body: JSON.stringify({
+        bookingId,
+        action,
+      }),
+    });
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error("Unable to Update the booking status");
     }
-    return data.booking
-  }catch(err){
-    console.error(err.message)
-    throw err
+    return data.booking;
+  } catch (err) {
+    console.error(err.message);
+    throw err;
   }
-}
+};
+
+const updateProvider = async ({
+  formData,
+  profileImage,
+  newPortfolioImages,
+  deletedPortfolioImageIds,
+  isAvailable,
+}) => {
+  try {
+    const submitData = new FormData();
+    const token = await getToken();
+    Object.keys(formData).forEach((key) => {
+      submitData.append(key, formData[key]);
+    });
+
+    submitData.append("isAvailable", isAvailable);
+
+    if (profileImage) {
+      submitData.append("profileImage", profileImage);
+    }
+
+    newPortfolioImages.forEach((image) => {
+      submitData.append("portfolioImages", image);
+    });
+
+    submitData.append(
+      "deletedPortfolioImageIds",
+      JSON.stringify(deletedPortfolioImageIds),
+    );
+
+    const response = await fetch(`${API_URL}/provider/me`, {
+      method: "PATCH",
+      headers: {
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
+      },
+      body: submitData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update provider");
+    }
+
+    return data;
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+};
+
 export {
   fetchServices,
   addService,
@@ -188,5 +247,6 @@ export {
   updateService,
   fetchProviderBookings,
   fetchProviderBooking,
-  updateBookingStatus
+  updateBookingStatus,
+  updateProvider,
 };

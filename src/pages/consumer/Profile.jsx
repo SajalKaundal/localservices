@@ -9,7 +9,7 @@ const Profile = () => {
   if (profileLoading) {
     return <div className="loading-state">Loading requests...</div>;
   } else {
-    const name = user.name.split(" ");
+    const name = user?.name?.split(" ");
     const firstName = name[0];
     const lastName = name[1] || "";
     return (
@@ -92,9 +92,9 @@ const Profile = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {user.savedAddress?.lenght > 0
-              ? user.savedAddress.map((a) => (
-                  <Card elevation="subtle">
+            {user.savedAddresses?.length > 0
+              ? user.savedAddresses.map((a) => (
+                  <Card elevation="subtle" key={a._id}>
                     <h5 className="heading-6">{a.title}</h5>
                     <p className="body-muted" style={{ marginTop: "4px" }}>
                       {a.address}

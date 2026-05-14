@@ -40,6 +40,7 @@ const DashboardLayout = () => {
           path: "/provider/earnings",
           icon: <FiDollarSign />,
         },
+        { name: "Profile", path: "/provider/profile", icon: <FiUser /> },
       ]
     : [
         { name: "Home / Search", path: "/", icon: <FiSearch /> },
