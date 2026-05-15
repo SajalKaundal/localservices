@@ -70,7 +70,7 @@ const BookingFlow = () => {
         serviceId: formData.service,
         providerId: formData.provider,
         address: formData.address,
-        description: formData.notes,
+        description: formData.notes || "I want this work done as soon as possible",
         startTime,
       };
 
