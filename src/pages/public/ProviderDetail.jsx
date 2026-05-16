@@ -12,7 +12,7 @@ const ProviderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userRole } = useAuth();
-  const [provider, setProvider] = useState([]);
+  const [provider, setProvider] = useState({});
   useEffect(() => {
     const getProvider = async () => {
       try {
@@ -32,7 +32,16 @@ const ProviderDetail = () => {
         <section className="profile-header-section">
           <Card elevation="medium" className="profile-main-card">
             <div className="profile-header-top">
-              <div className="profile-avatar-large">C</div>
+              <div className="profile-avatar-large"> {provider.profileImage?.url ? (
+                      <img
+                        src={provider.profileImage?.url}
+                        alt="profile-image"
+                        className="profile-avatar-large"
+                        style={{objectFit:"cover"}}
+                      ></img>
+                    ) : (
+                      provider.name?.charAt(0)
+                    )}</div>
               <div className="profile-title-area">
                 <div
                   style={{ display: "flex", gap: "12px", alignItems: "center" }}

@@ -1,14 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL
 
-const fetchProviders = async () => {
+const fetchProviders = async (cursor) => {
   try {
-    const response = await fetch(`${API_URL}/public/providers`)
+    console.log(cursor)
+    const response = await fetch(`${API_URL}/public/providers?cursor=${cursor}`)
     const data = await response.json()
     if(!data.success){
       throw new Error("Unable to fetch Provider")
 
     }
-    return data.providers
+    return data
   } catch (err) {
     console.error(err.message);
     throw err;

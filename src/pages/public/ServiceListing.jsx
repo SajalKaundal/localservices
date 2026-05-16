@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
@@ -11,14 +11,58 @@ const ServiceListing = () => {
   const [providers, setProviders] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // const { categoryId } = useParams();
+  const cursorRef = useRef();
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const fetchingRef = useRef(false);
+  const observerRef = useRef();
+
+  const getProviders = useCallback(async () => {
+    if (!hasMore) return;
+    try {
+      fetchingRef.current = true;
+      setLoading(true);
+      const data = await fetchProviders(cursorRef.current);
+
+      setProviders((prev) => {
+        const map = new Map();
+        [...prev, ...data.providers].forEach((p) => {
+          map.set(p._id, p);
+        });
+        return Array.from(map.values());
+      });
+      cursorRef.current = data.newCursor;
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      fetchingRef.current = false;
+      setLoading(false);
+    }
+  }, [hasMore]);
 
   useEffect(() => {
-    const getProviders = async () => {
-      const providers = await fetchProviders();
-      setProviders(providers);
-    };
     getProviders();
-  }, []);
+  }, [getProviders]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !fetchingRef.current) {
+          getProviders();
+        }
+      },
+      {
+        threshold: 0.2,
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [getProviders]);
 
   return (
     <div className="service-listing-page">
@@ -90,6 +134,7 @@ const ServiceListing = () => {
           </div>
 
           <div className="providers-list" style={{ marginTop: "16px" }}>
+            {loading && <div>Loading...</div>}
             {providers.map((provider) => (
               <Card
                 key={provider._id}
@@ -98,7 +143,16 @@ const ServiceListing = () => {
               >
                 <div className="listing-card-left">
                   <div className="listing-avatar">
-                    {provider.name.charAt(0)}
+                    {provider.profileImage.url ? (
+                      <img
+                        src={provider.profileImage.url}
+                        alt="profile-image"
+                        className="listing-avatar"
+                        style={{ objectFit: "cover" }}
+                      ></img>
+                    ) : (
+                      provider.name.charAt(0)
+                    )}
                   </div>
                   <div className="listing-info">
                     <div
@@ -143,6 +197,7 @@ const ServiceListing = () => {
                 </div>
               </Card>
             ))}
+            <div ref={observerRef} />
           </div>
         </main>
       </div>
