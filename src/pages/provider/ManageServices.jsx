@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { deleteService, fetchServices } from "../../services/providerServices";
 
 const ManageServices = () => {
-
   const navigate = useNavigate();
 
   const [services, setServices] = useState([]);
 
   const onDelete = async (sid) => {
     try {
-      await deleteService(sid);
+      const deletedService = await deleteService(sid);
+      setServices(services.filter((s) => s._id !== deletedService._id));
     } catch (err) {
       console.error(err.message);
     }
@@ -74,7 +74,9 @@ const ManageServices = () => {
                     <Button
                       variant="ghost"
                       style={{ padding: "4px 8px" }}
-                      onClick={() => navigate(`/provider/services/edit/${s._id}`)}
+                      onClick={() =>
+                        navigate(`/provider/services/edit/${s._id}`)
+                      }
                     >
                       Edit
                     </Button>

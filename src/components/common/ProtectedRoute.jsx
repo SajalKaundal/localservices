@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const ProtectedRoute = ({ allowedRole }) => {
   const { userRole, isAuthenticated, isLoading } = useAuth();
-
+ 
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--color-void)' }}>

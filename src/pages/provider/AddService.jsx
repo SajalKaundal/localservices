@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import { useNavigate } from 'react-router-dom';
-import { addService } from '../../services/providerServices';
+import React, { useState } from "react";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import { useNavigate } from "react-router-dom";
+import { addService } from "../../services/providerServices";
 
 const AddService = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const AddService = () => {
     pricingType: "fixed",
     basePrice: "",
     estimatedDuration: "",
-    description: ""
+    description: "",
   });
 
   const handleChange = (e) => {
@@ -22,33 +22,39 @@ const AddService = () => {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-
-      const data = await addService(formData)
-      if(!data){
-        throw new Error("Adding Service Failed")
+    try {
+      const data = await addService(formData);
+      if (!data) {
+        throw new Error("Adding Service Failed");
       }
-    }catch(err){
-      console.error(err.message)
+    } catch (err) {
+      console.error(err.message);
     }
     console.log("Submitted Data:", formData);
 
     // TODO: send to backend here
 
-    navigate('/provider/services');
+    navigate("/provider/services");
   };
 
   return (
     <div className="provider-page">
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "24px",
+        }}
+      >
         <h2 className="heading-3">Add New Service</h2>
-        <Button variant="ghost" onClick={() => navigate('/provider/services')}>
+        <Button variant="ghost" onClick={() => navigate("/provider/services")}>
           Back to Services
         </Button>
       </div>
@@ -56,7 +62,7 @@ const AddService = () => {
       <Card elevation="medium">
         <form
           onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+          style={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
           <Input
             label="Service Name"
@@ -67,9 +73,17 @@ const AddService = () => {
             // fullWidth
           />
 
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ display: "flex", gap: "20px" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: "#E2E8F0",
+                }}
+              >
                 Category
               </label>
               <select
@@ -77,25 +91,37 @@ const AddService = () => {
                 value={formData.category}
                 onChange={handleChange}
                 style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  backgroundColor: '#0F172A',
-                  border: '1px solid #334155',
-                  borderRadius: '8px',
-                  color: '#F8FAFC',
-                  fontSize: '15px'
+                  width: "100%",
+                  padding: "10px 14px",
+                  backgroundColor: "#0F172A",
+                  border: "1px solid #334155",
+                  borderRadius: "8px",
+                  color: "#F8FAFC",
+                  fontSize: "15px",
                 }}
               >
                 <option value="">Select a category</option>
-                <option value="AC Repair">AC Repair</option>
-                <option value="Plumbing">Plumbing</option>
-                <option value="Electrical">Electrical</option>
-                <option value="Cleaning">Cleaning</option>
+                <option value="ac-repair">AC Repair</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrician">Electrical</option>
+                <option value="home-cleaning">Cleaning</option>
+                <option value="carpentry">Carpentry</option>
+                <option value="painting">Painting</option>
+                <option value="pest-control">Pest Control</option>
+                <option value="appliance-repair">Appliance Repair</option>
               </select>
             </div>
 
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: "#E2E8F0",
+                }}
+              >
                 Pricing Type
               </label>
               <select
@@ -103,13 +129,13 @@ const AddService = () => {
                 value={formData.pricingType}
                 onChange={handleChange}
                 style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  backgroundColor: '#0F172A',
-                  border: '1px solid #334155',
-                  borderRadius: '8px',
-                  color: '#F8FAFC',
-                  fontSize: '15px'
+                  width: "100%",
+                  padding: "10px 14px",
+                  backgroundColor: "#0F172A",
+                  border: "1px solid #334155",
+                  borderRadius: "8px",
+                  color: "#F8FAFC",
+                  fontSize: "15px",
                 }}
               >
                 <option value="fixed">Fixed</option>
@@ -118,7 +144,7 @@ const AddService = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ display: "flex", gap: "20px" }}>
             <div style={{ flex: 1 }}>
               <Input
                 label="Rate (₹)"
@@ -130,9 +156,17 @@ const AddService = () => {
               />
             </div>
 
-            {formData.pricingType === 'fixed' && (
+            {formData.pricingType === "fixed" && (
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#E2E8F0",
+                  }}
+                >
                   Estimated Duration
                 </label>
                 <select
@@ -140,13 +174,13 @@ const AddService = () => {
                   value={formData.estimatedDuration}
                   onChange={handleChange}
                   style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    backgroundColor: '#0F172A',
-                    border: '1px solid #334155',
-                    borderRadius: '8px',
-                    color: '#F8FAFC',
-                    fontSize: '15px'
+                    width: "100%",
+                    padding: "10px 14px",
+                    backgroundColor: "#0F172A",
+                    border: "1px solid #334155",
+                    borderRadius: "8px",
+                    color: "#F8FAFC",
+                    fontSize: "15px",
                   }}
                 >
                   <option value="">Select duration</option>
@@ -166,7 +200,15 @@ const AddService = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#E2E8F0' }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontSize: "14px",
+                fontWeight: "500",
+                color: "#E2E8F0",
+              }}
+            >
               Description
             </label>
             <textarea
@@ -174,24 +216,31 @@ const AddService = () => {
               value={formData.description}
               onChange={handleChange}
               style={{
-                width: '100%',
-                padding: '10px 14px',
-                backgroundColor: '#0F172A',
-                border: '1px solid #334155',
-                borderRadius: '8px',
-                color: '#F8FAFC',
-                fontSize: '15px',
-                minHeight: '100px'
+                width: "100%",
+                padding: "10px 14px",
+                backgroundColor: "#0F172A",
+                border: "1px solid #334155",
+                borderRadius: "8px",
+                color: "#F8FAFC",
+                fontSize: "15px",
+                minHeight: "100px",
               }}
               placeholder="Describe the service in detail..."
             ></textarea>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "12px",
+              marginTop: "12px",
+            }}
+          >
             <Button
               variant="ghost"
               type="button"
-              onClick={() => navigate('/provider/services')}
+              onClick={() => navigate("/provider/services")}
             >
               Cancel
             </Button>
