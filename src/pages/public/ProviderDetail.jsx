@@ -127,20 +127,23 @@ const ProviderDetail = () => {
               <h2 className="heading-4" style={{ marginBottom: "16px" }}>
                 Reviews
               </h2>
-              <Card elevation="subtle" className="review-card">
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <h5 className="heading-6">Sarah Jenkins</h5>
-                  <span style={{ color: "var(--color-neon-green)" }}>
-                    ★ 5.0
-                  </span>
-                </div>
-                <p className="body-muted" style={{ marginTop: "8px" }}>
-                  Arrived on time and fixed the issue in 30 minutes. Highly
-                  recommended!
-                </p>
-              </Card>
+              {provider.reviews && provider.reviews.length > 0 ? (
+                provider.reviews.map((review, index) => (
+                  <Card key={review._id || index} elevation="subtle" className="review-card" style={{ marginBottom: "16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <h5 className="heading-6">{review.userId?.name || "Customer"}</h5>
+                      <span style={{ color: "var(--color-neon-green)" }}>
+                        ★ {review.rating ? review.rating.toFixed(1) : "5.0"}
+                      </span>
+                    </div>
+                    <p className="body-muted" style={{ marginTop: "8px" }}>
+                      {review.comment}
+                    </p>
+                  </Card>
+                ))
+              ) : (
+                <p className="body-muted">No reviews yet.</p>
+              )}
             </section>
           </div>
 

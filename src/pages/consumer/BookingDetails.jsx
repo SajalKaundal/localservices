@@ -7,6 +7,7 @@ import { initiatePayment } from "../../utils/paymentUtils";
 import "./ConsumerPages.css";
 import { fetchUserBooking } from "../../services/bookingServices";
 import { createOrder } from "../../services/paymentServices";
+import { submitReview } from "../../services/reviewServices";
 
 const BookingDetails = () => {
   // const [searchParams] = useSearchParams();
@@ -31,7 +32,32 @@ const BookingDetails = () => {
     advanceAmount: "",
     remainingAmount: "",
     bookingStatus: "Advance-Payment-Pending",
+    hasReviewed: false,
   });
+
+  const [reviewData, setReviewData] = useState({ rating: 5, comment: "" });
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewData.comment) return alert("Please enter a comment");
+    try {
+      setIsSubmittingReview(true);
+      await submitReview({
+        bookingId: id,
+        providerId: bookingData.providerId._id || bookingData.providerId,
+        rating: reviewData.rating,
+        comment: reviewData.comment,
+      });
+      setReviewSubmitted(true);
+      alert("Review submitted successfully!");
+    } catch (err) {
+      alert(err.message || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const handleAdvancePayment = async () => {
     const order = await createOrder(id);
@@ -470,6 +496,64 @@ const BookingDetails = () => {
 
               <p className="body-muted">All payments completed successfully.</p>
             </div>
+
+            {!reviewSubmitted && !bookingData.hasReviewed ? (
+              <div style={{ marginTop: "24px", borderTop: "1px solid var(--color-dark-card-border)", paddingTop: "16px" }}>
+                <h4 className="heading-5" style={{ marginBottom: "16px" }}>Leave a Review</h4>
+                <form onSubmit={handleReviewSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--color-shade-50)" }}>Rating</label>
+                    <select 
+                      value={reviewData.rating}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, rating: Number(e.target.value) }))}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "transparent",
+                        color: "#FFFFFF",
+                        border: "1px solid #3F3F46",
+                        borderRadius: "8px",
+                        padding: "12px 16px",
+                        outline: "none",
+                      }}
+                    >
+                      <option value="5" style={{color: "#000"}}>5 Stars - Excellent</option>
+                      <option value="4" style={{color: "#000"}}>4 Stars - Good</option>
+                      <option value="3" style={{color: "#000"}}>3 Stars - Average</option>
+                      <option value="2" style={{color: "#000"}}>2 Stars - Poor</option>
+                      <option value="1" style={{color: "#000"}}>1 Star - Terrible</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--color-shade-50)" }}>Comment</label>
+                    <textarea 
+                      required
+                      value={reviewData.comment}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, comment: e.target.value }))}
+                      rows={4}
+                      placeholder="Share your experience..."
+                      style={{
+                        width: "100%",
+                        backgroundColor: "transparent",
+                        color: "#FFFFFF",
+                        border: "1px solid #3F3F46",
+                        borderRadius: "8px",
+                        padding: "12px 16px",
+                        outline: "none",
+                        fontFamily: "inherit",
+                        resize: "vertical"
+                      }}
+                    />
+                  </div>
+                  <Button type="submit" variant="primary" disabled={isSubmittingReview}>
+                    {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                  </Button>
+                </form>
+              </div>
+            ) : (
+              <div style={{ marginTop: "24px", padding: "16px", borderRadius: "8px", backgroundColor: "rgba(54, 244, 164, 0.1)", textAlign: "center" }}>
+                <p style={{ color: "var(--color-neon-green)" }}>Thank you for your review!</p>
+              </div>
+            )}
           </Card>
         )}
 

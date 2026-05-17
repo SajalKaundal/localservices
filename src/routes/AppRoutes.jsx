@@ -47,7 +47,7 @@ const AppRoutes = () => {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/services" element={<CategoriesPage />} />
-        <Route path="/services/:id" element={<ServiceListing />} />
+        <Route path="/services/:category" element={<ServiceListing />} />
         <Route path="/providers" element={<ProvidersPage />} />
         <Route path="/provider/:id" element={<ProviderDetail />} />
         <Route path="/auth" element={<Auth />} />

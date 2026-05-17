@@ -1,59 +1,71 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import "./ServiceListing.css";
-import { fetchProviders } from "../../services/publicServices";
+import { fetchServices } from "../../services/publicServices";
+
+const formatCategoryHeading = (cat) => {
+  if (!cat) return "Services";
+  return cat.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + " Services";
+};
 
 const ServiceListing = () => {
+  const { category } = useParams();
   const navigate = useNavigate();
-  const [providers, setProviders] = useState([]);
+  const [services, setServices] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // const { categoryId } = useParams();
   const cursorRef = useRef();
-  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const hasMoreRef = useRef(true);
   const fetchingRef = useRef(false);
+  const intialFetchRef = useRef(true);
   const observerRef = useRef();
 
-  const getProviders = useCallback(async () => {
-    if (!hasMore) return;
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, []);
+
+  const getServices = useCallback(async () => {
+    if (!hasMoreRef.current) return;
     try {
       fetchingRef.current = true;
       setLoading(true);
-      const data = await fetchProviders(cursorRef.current);
+      const data = await fetchServices(cursorRef.current, category);
 
-      setProviders((prev) => {
+      setServices((prev) => {
         const map = new Map();
-        [...prev, ...data.providers].forEach((p) => {
+        [...prev, ...data.services].forEach((p) => {
           map.set(p._id, p);
         });
         return Array.from(map.values());
       });
       cursorRef.current = data.newCursor;
-      setHasMore(data.hasMore);
+      hasMoreRef.current = data.hasMore;
     } catch (err) {
       console.log(err);
     } finally {
       fetchingRef.current = false;
+      intialFetchRef.current = false;
       setLoading(false);
     }
-  }, [hasMore]);
-
-  useEffect(() => {
-    getProviders();
-  }, [getProviders]);
+  }, [category]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !fetchingRef.current) {
-          getProviders();
+        if (
+          entries[0].isIntersecting &&
+          !fetchingRef.current &&
+          !intialFetchRef.current
+        ) {
+          getServices();
         }
       },
       {
-        threshold: 0.2,
+        threshold: 1,
       },
     );
 
@@ -62,7 +74,11 @@ const ServiceListing = () => {
     }
 
     return () => observer.disconnect();
-  }, [getProviders]);
+  }, [getServices]);
+
+  useEffect(() => {
+    getServices();
+  }, [getServices]);
 
   return (
     <div className="service-listing-page">
@@ -120,7 +136,7 @@ const ServiceListing = () => {
         <main className="listings-main">
           <div className="sort-filter-container">
             <h1 className="heading-2" style={{ marginBottom: "8px" }}>
-              AC Repair Providers
+              {formatCategoryHeading(category)}
             </h1>
             <Button
               variant="outline"
@@ -133,25 +149,32 @@ const ServiceListing = () => {
             </Button>
           </div>
 
-          <div className="providers-list" style={{ marginTop: "16px" }}>
+          <div className="services-list" style={{ marginTop: "16px" }}>
             {loading && <div>Loading...</div>}
-            {providers.map((provider) => (
+            {services.map((service) => (
               <Card
-                key={provider._id}
+                key={service._id}
                 className="listing-card"
-                onClick={() => navigate(`/provider/${provider._id}`)}
+                onClick={() => navigate(`/service/${service._id}`)}
               >
                 <div className="listing-card-left">
                   <div className="listing-avatar">
-                    {provider.profileImage.url ? (
+                    {service.image ? (
                       <img
-                        src={provider.profileImage.url}
+                        src={service.image}
+                        alt={service.name}
+                        className="listing-avatar"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : service.providerId?.profileImage?.url ? (
+                      <img
+                        src={service.providerId.profileImage.url}
                         alt="profile-image"
                         className="listing-avatar"
                         style={{ objectFit: "cover" }}
-                      ></img>
+                      />
                     ) : (
-                      provider.name.charAt(0)
+                      service.name.charAt(0).toUpperCase()
                     )}
                   </div>
                   <div className="listing-info">
@@ -162,42 +185,43 @@ const ServiceListing = () => {
                         alignItems: "center",
                       }}
                     >
-                      <h3 className="heading-4">{provider.name}</h3>
+                      <h3 className="heading-4">{service.name}</h3>
                     </div>
                     <p className="body-muted" style={{ marginTop: "4px" }}>
-                      {`${provider.experience} years`} experience •{" "}
-                      {`₹${provider.pricePerHour}/hr`}
+                      {service.pricingType === "hourly" 
+                        ? `₹${service.basePrice}/hr` 
+                        : `₹${service.basePrice} (Fixed, ~${service.estimatedDuration} hrs)`}
                     </p>
+                    {service.description && (
+                      <p className="body-muted" style={{ marginTop: "8px", fontSize: "14px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {service.description}
+                      </p>
+                    )}
                     <div
                       className="listing-rating"
                       style={{ marginTop: "8px" }}
                     >
                       <span style={{ color: "var(--color-neon-green)" }}>
-                        ★ {provider.rating}
+                        ★ {service.rating || service.providerId?.rating || "New"}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="listing-card-right">
-                  {provider.isAvailable ? (
-                    <Badge
-                      style={{
-                        backgroundColor: "rgba(54, 244, 164, 0.2)",
-                        color: "var(--color-neon-green)",
-                      }}
-                    >
-                      Available
-                    </Badge>
-                  ) : (
-                    <Badge style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-                      Busy
-                    </Badge>
-                  )}
-                  <Button variant="ghost">View Details</Button>
+                  <Button 
+                    variant="primary" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const providerIdStr = typeof service.providerId === 'object' ? service.providerId._id : service.providerId;
+                      navigate(`/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`);
+                    }}
+                  >
+                    Book Now
+                  </Button>
                 </div>
               </Card>
             ))}
-            <div ref={observerRef} />
+            <div ref={observerRef} style={{ height: "20px" }} />
           </div>
         </main>
       </div>
