@@ -86,3 +86,61 @@
     justify-content: space-between;
   }
 }
+
+.reviews-horizontal-container {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  scroll-behavior: smooth;
+  /* Smooth scrolling experience */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional: Custom scrollbar for better appearance */
+.reviews-horizontal-container::-webkit-scrollbar {
+  height: 6px;
+}
+.reviews-horizontal-container::-webkit-scrollbar-track {
+  background: var(--color-dark-forest);
+  border-radius: 4px;
+}
+.reviews-horizontal-container::-webkit-scrollbar-thumb {
+  background: var(--color-neon-green);
+  border-radius: 4px;
+}
+
+.review-card {
+  min-width: 280px;
+  max-width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.review-star-rating {
+  color: var(--color-neon-green);
+  font-weight: bold;
+}
+
+.review-comment {
+  margin-top: var(--space-2);
+  /* Optional: Limit lines if needed, but since we are showing comments, let's keep it simple or use line-clamp */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.load-more-container {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: center;
+}

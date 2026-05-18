@@ -13,6 +13,7 @@ const ProviderDetail = () => {
   const navigate = useNavigate();
   const { userRole } = useAuth();
   const [provider, setProvider] = useState({});
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState(3);
   useEffect(() => {
     const getProvider = async () => {
       try {
@@ -68,7 +69,7 @@ const ProviderDetail = () => {
                   <span style={{ color: "var(--color-neon-green)" }}>
                     ★ {provider.rating}
                   </span>
-                  <span className="body-muted">(124 reviews)</span>
+                  <span className="body-muted">({provider.ratingCount?provider.ratingCount:0} reviews)</span>
                   <span className="body-muted">• {provider.location}</span>
                 </div>
               </div>
@@ -128,19 +129,30 @@ const ProviderDetail = () => {
                 Reviews
               </h2>
               {provider.reviews && provider.reviews.length > 0 ? (
-                provider.reviews.map((review, index) => (
-                  <Card key={review._id || index} elevation="subtle" className="review-card" style={{ marginBottom: "16px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <h5 className="heading-6">{review.userId?.name || "Customer"}</h5>
-                      <span style={{ color: "var(--color-neon-green)" }}>
-                        ★ {review.rating ? review.rating.toFixed(1) : "5.0"}
-                      </span>
+                <>
+                  <div className="reviews-horizontal-container">
+                    {provider.reviews.slice(0, visibleReviewsCount).map((review, index) => (
+                      <Card key={review._id || index} elevation="subtle" className="review-card">
+                        <div className="review-card-header">
+                          <h5 className="heading-6">{review.userId?.name || "Customer"}</h5>
+                          <span className="review-star-rating">
+                            ★ {review.rating ? review.rating.toFixed(1) : "5.0"}
+                          </span>
+                        </div>
+                        <p className="body-muted review-comment">
+                          {review.comment}
+                        </p>
+                      </Card>
+                    ))}
+                  </div>
+                  {visibleReviewsCount < provider.reviews.length && (
+                    <div className="load-more-container">
+                      <Button variant="secondary" onClick={() => setVisibleReviewsCount(prev => prev + 3)}>
+                        Load More Reviews
+                      </Button>
                     </div>
-                    <p className="body-muted" style={{ marginTop: "8px" }}>
-                      {review.comment}
-                    </p>
-                  </Card>
-                ))
+                  )}
+                </>
               ) : (
                 <p className="body-muted">No reviews yet.</p>
               )}

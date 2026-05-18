@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const submitReview = async ({ bookingId, providerId, rating, comment }) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_URL}/user/reviews`, {
+    const response = await fetch(`${API_URL}/user/booking/review`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

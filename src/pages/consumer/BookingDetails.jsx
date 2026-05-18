@@ -44,13 +44,15 @@ const BookingDetails = () => {
     if (!reviewData.comment) return alert("Please enter a comment");
     try {
       setIsSubmittingReview(true);
-      await submitReview({
+     const success = await submitReview({
         bookingId: id,
         providerId: bookingData.providerId._id || bookingData.providerId,
         rating: reviewData.rating,
         comment: reviewData.comment,
       });
-      setReviewSubmitted(true);
+      if(success){
+        setReviewSubmitted(true);
+      }
       alert("Review submitted successfully!");
     } catch (err) {
       alert(err.message || "Failed to submit review");
@@ -120,6 +122,7 @@ const BookingDetails = () => {
       try {
         const booking = await fetchUserBooking(id);
         setBookingData(booking);
+        setReviewSubmitted(booking.isReviewed)
       } catch (err) {
         console.error(err.message);
       }

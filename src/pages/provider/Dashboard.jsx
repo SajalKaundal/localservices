@@ -9,12 +9,13 @@ import StatCard from "../../components/dashboard/StatCard";
 import ProviderJobCard from "../../components/dashboard/ProviderJobCard";
 // Reusing consumer dashboard CSS for grid structure
 import "../consumer/Dashboard.css";
+import { useUser } from "../../context/UserContext";
 
 const ProviderDashboard = () => {
   const navigate = useNavigate();
   const [newRequests, setNewRequests] = useState([]);
   const [upcomingJobs, setUpcomingJobs] = useState([]);
-
+  const {user} = useUser()
   useEffect(() => {
     const getRequests = async () => {
       const requests = await fetchRequests();
@@ -54,7 +55,7 @@ const ProviderDashboard = () => {
             <div className="recommendations-grid">
               <StatCard title="Monthly Earnings" value="₹1,240" />
               <StatCard title="Completed Jobs" value="18" />
-              <StatCard title="Rating" value="4.9" />
+              <StatCard title="Rating" value={user.rating?user.rating:0} />
             </div>
           </section>
 

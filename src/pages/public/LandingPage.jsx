@@ -147,7 +147,7 @@ const LandingPage = () => {
                   <div className="provider-stats">
                     <span className="provider-rating">★ {provider.rating}</span>
                     <span className="body-muted">
-                      ({provider.reviews} reviews)
+                      ({provider.ratingCount?provider.ratingCount:0} reviews)
                     </span>
                   </div>
                   <Button
