@@ -51,6 +51,11 @@
 @media (max-width: 900px) {
   .requests-container {
     grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  
+  .requests-list {
+    max-height: 240px;
   }
 }
 

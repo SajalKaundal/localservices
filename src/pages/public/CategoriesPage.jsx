@@ -149,14 +149,14 @@ const CategoriesPage = () => {
               >
                 <div className="category-image-wrapper">
                   <img
-                    src={service.image || service.providerId?.portfolio?.[0]?.url || "https://placehold.co/600x400/1e1e1e/FFF?text=Service"}
+                    src={service.providerId?.portfolio?.[0]?.url}
                     alt={service.name}
                     className="category-cover-img detailed-cover-img"
                   />
                 </div>
                 <div className="category-content" style={{ display: "flex", flexDirection: "column", flex: 1, padding: "16px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                    <h3 className="heading-4">{service.name}</h3>
+                    <h3 className="heading-5">{service.name}</h3>
                     <div style={{ fontWeight: "600", color: "var(--color-primary)", whiteSpace: "nowrap", fontSize: "18px" }}>
                       ₹{service.basePrice}{service.pricingType === "hourly" ? "/hr" : ""}
                     </div>

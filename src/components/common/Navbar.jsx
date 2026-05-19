@@ -4,9 +4,11 @@ import Button from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 import { useUser } from "../../context/UserContext";
+import { FiMenu, FiX } from "react-icons/fi";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { userRole, logout } = useAuth();
 
@@ -122,11 +124,66 @@ const Navbar = () => {
               <Button variant="ghost" onClick={() => navigate("/auth")}>
                 Log in
               </Button>
-              {/* <Button variant="primary" onClick={() => navigate('/auth')}>Start for free</Button> */}
             </>
           )}
+          
+          <button 
+            className="mobile-nav-toggle"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
         </div>
       </div>
+
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-overlay">
+          <div className="mobile-menu-content">
+            {userRole === "user" && (
+              <>
+                <Link
+                  to="/consumer/dashboard"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Dashboard
+                </Link>
+                <Link to="/consumer/bookings" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  My Bookings
+                </Link>
+                <Link to="/consumer/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  Account Settings
+                </Link>
+              </>
+            )}
+            {userRole === "provider" && (
+              <>
+                <Link
+                  to="/provider/dashboard"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Provider Dashboard
+                </Link>
+                <Link to="/provider/jobs" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  Active Jobs
+                </Link>
+                <Link to="/provider/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  Account Settings
+                </Link>
+              </>
+            )}
+            {!userRole && (
+              <Link to="/auth" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                Log in
+              </Link>
+            )}
+            <Link to="/admin/dashboard" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Admin
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

@@ -15,7 +15,7 @@ const ProviderDashboard = () => {
   const navigate = useNavigate();
   const [newRequests, setNewRequests] = useState([]);
   const [upcomingJobs, setUpcomingJobs] = useState([]);
-  const {user} = useUser()
+  const { user } = useUser();
   useEffect(() => {
     const getRequests = async () => {
       const requests = await fetchRequests();
@@ -55,7 +55,7 @@ const ProviderDashboard = () => {
             <div className="recommendations-grid">
               <StatCard title="Monthly Earnings" value="₹1,240" />
               <StatCard title="Completed Jobs" value="18" />
-              <StatCard title="Rating" value={user.rating?user.rating:0} />
+              <StatCard title="Rating" value={user?.rating ? user.rating : 0} />
             </div>
           </section>
 
@@ -99,7 +99,8 @@ const ProviderDashboard = () => {
                     key={job._id}
                     title={job.service?.name}
                     badgeText={
-                      job.bookingStatus === "in-progress" || job.status === "in-progress"
+                      job.bookingStatus === "in-progress" ||
+                      job.status === "in-progress"
                         ? "In Progress"
                         : "Confirmed"
                     }

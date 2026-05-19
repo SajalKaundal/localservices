@@ -178,4 +178,11 @@
   .dashboard-content {
     padding: var(--space-4);
   }
+  
+  .header-left .heading-4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60vw;
+  }
 }

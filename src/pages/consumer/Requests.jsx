@@ -232,7 +232,7 @@ const Requests = () => {
                       </p>
                       <Button
                         variant="primary"
-                        onClick={() => navigate(`/consumer/booking/BK-1001`)}
+                        onClick={() => navigate(`/consumer/booking/${selectedRequest.bookingId}`)}
                       >
                         View Booking Details
                       </Button>

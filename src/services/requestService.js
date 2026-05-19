@@ -29,7 +29,7 @@ export const createRequest = async (request) => {
 export const fetchRequests = async () => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_URL}/requests/`, {
+    const response = await fetch(`${API_URL}/requests/?action`, {
       headers: {
         "Content-Type": "application/json",
         role: localStorage.getItem("userRole"),
@@ -113,3 +113,4 @@ export const sendProposal = async (requestId,proposal)=>{
     throw err
   }
 }
+

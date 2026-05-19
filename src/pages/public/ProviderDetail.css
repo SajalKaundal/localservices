@@ -23,6 +23,7 @@
   justify-content: center;
   font-size: 48px;
   font-family: var(--font-display);
+  flex-shrink: 0;
 }
 
 .profile-stats {
@@ -84,6 +85,11 @@
   .service-price {
     width: 100%;
     justify-content: space-between;
+  }
+  .profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
   }
 }
 

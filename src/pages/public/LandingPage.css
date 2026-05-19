@@ -230,3 +230,28 @@
   font-weight: 500;
   color: var(--color-text-primary);
 }
+
+@media (max-width: 640px) {
+  .hero-search-box {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+  
+  .hero-search-input {
+    width: 100%;
+  }
+
+  .providers-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .reviews-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .providers-grid, .reviews-grid, .categories-grid {
+    grid-template-columns: 1fr;
+  }
+}

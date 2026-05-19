@@ -21,6 +21,8 @@
   color: var(--color-shade-50);
   font-weight: 500;
   padding: var(--space-2);
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .progress-step.active {

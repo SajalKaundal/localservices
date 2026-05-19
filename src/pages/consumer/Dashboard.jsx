@@ -18,9 +18,7 @@ const ConsumerDashboard = () => {
   useEffect(() => {
     const getUpComingBookings = async () => {
       try {
-        const upComingBookings = await fetchUserBookings(
-          true,
-        );
+        const upComingBookings = await fetchUserBookings(true);
         setUpComingsBookings(upComingBookings);
       } catch (e) {
         console.error(e);
@@ -28,10 +26,7 @@ const ConsumerDashboard = () => {
     };
     const getPendingPayment = async () => {
       try {
-        const pendingPayment = await fetchUserBookings(
-          false,
-          true,
-        );
+        const pendingPayment = await fetchUserBookings(false, true);
         setPendingPayment(pendingPayment);
       } catch (e) {
         console.error(e);
@@ -45,8 +40,8 @@ const ConsumerDashboard = () => {
             _id: "req2",
             service: { name: "AC Maintenance" },
             status: "Action Required",
-            provider: { name: "Cooling Experts" }
-          }
+            provider: { name: "Cooling Experts" },
+          },
         ];
         setActionRequiredRequests(requests);
       } catch (e) {
@@ -63,11 +58,11 @@ const ConsumerDashboard = () => {
       <div className="dashboard-grid">
         <div className="main-column">
           <section className="dashboard-section">
-            {pendingPayment.length > 0 || actionRequiredRequests.length > 0 ? (
-              <>
-                <h3 className="heading-5 section-header">Action Required</h3>
+            {/* {actionRequiredRequests.length > 0 ? ( */}
 
-                {actionRequiredRequests.map((req) => (
+            {/* <h3 className="heading-5 section-header">Action Required</h3> */}
+
+            {/* {actionRequiredRequests.map((req) => (
                   <Card
                     key={req._id}
                     elevation="medium"
@@ -100,9 +95,10 @@ const ConsumerDashboard = () => {
                       </Button>
                     </div>
                   </Card>
-                ))}
+                ))} */}
 
-                {pendingPayment.map((p) => (
+            {pendingPayment.length > 0
+              ? pendingPayment.map((p) => (
                   <Card
                     key={p._id}
                     elevation="medium"
@@ -119,9 +115,7 @@ const ConsumerDashboard = () => {
                       }}
                     >
                       <div>
-                        <h4 className="heading-6">
-                          Payment Due
-                        </h4>
+                        <h4 className="heading-6">Payment Due</h4>
                         <p className="body-muted" style={{ marginTop: "4px" }}>
                           {p.service.name} • Completed on{" "}
                           {p.updatedAt?.slice(0, 10)}
@@ -135,20 +129,22 @@ const ConsumerDashboard = () => {
                       </Button>
                     </div>
                   </Card>
-                ))}
-              </>
-            ) : null}
+                ))
+              : null}
 
             <h3 className="heading-5 section-header">Upcoming Bookings</h3>
             <div className="bookings-list">
-              {upComingBookings.length > 0 &&
-                upComingBookings.map((booking) => (
-                  <ConsumerBookingCard
-                    key={booking._id}
-                    booking={booking}
-                    onManage={() => navigate(`/consumer/booking/${booking._id}`)}
-                  />
-                ))}
+              {upComingBookings.length > 0
+                ? upComingBookings.map((booking) => (
+                    <ConsumerBookingCard
+                      key={booking._id}
+                      booking={booking}
+                      onManage={() =>
+                        navigate(`/consumer/booking/${booking._id}`)
+                      }
+                    />
+                  ))
+                : "No Upcoming Bookings"}
             </div>
           </section>
           <section className="dashboard-section">
@@ -170,7 +166,11 @@ const ConsumerDashboard = () => {
             >
               Search our network of verified professionals.
             </p>
-            <Button variant="primary" style={{ width: "100%" }}>
+            <Button
+              variant="primary"
+              style={{ width: "100%" }}
+              onClick={() => navigate("/services")}
+            >
               Search Services
             </Button>
           </Card>

@@ -84,3 +84,10 @@
 .auth-toggle-btn:hover {
   color: var(--color-white);
 }
+
+@media (max-width: 640px) {
+  .auth-card {
+    padding: var(--space-6) var(--space-4);
+    margin: 0 var(--space-4);
+  }
+}

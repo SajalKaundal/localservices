@@ -22,3 +22,10 @@
 .detailed-cat-card .category-image-wrapper {
   height: 160px;
 }
+
+@media (max-width: 640px) {
+  .search-input-cat {
+    min-width: 0;
+    width: 100%;
+  }
+}
