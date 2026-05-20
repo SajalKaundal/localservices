@@ -239,22 +239,28 @@ const updateProvider = async ({
   }
 };
 
-const fetchProviderTransactions = async()=>{
-  try{
-    const response = await fetch(`${API_URL}/provider/bookings/transactions`)
+const fetchProviderTransactions = async () => {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/provider/bookings/transactions`, {
+      headers: {
+        role: localStorage.getItem("userRole"),
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    const data = await response.json()
+    const data = await response.json();
 
-    if(!data.success){
-      throw new Error("Unable to fetch ")
+    if (!data.success) {
+      throw new Error("Unable to fetch ");
     }
 
-    return data
-  }catch(err){
-    console.log(err)
-    throw err
+    return data.transactions;
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
-}
+};
 
 export {
   fetchServices,
@@ -266,5 +272,5 @@ export {
   fetchProviderBooking,
   updateBookingStatus,
   updateProvider,
-  getProvider
+  fetchProviderTransactions,
 };
