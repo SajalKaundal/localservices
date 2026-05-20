@@ -69,13 +69,13 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions">
-          <Button
+          {/* <Button
             variant="ghost"
             onClick={() => navigate("/admin/dashboard")}
             style={{ color: "var(--color-shade-50)", marginRight: "8px" }}
           >
             Admin
-          </Button>
+          </Button> */}
           {userRole ? (
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <div
@@ -126,8 +126,8 @@ const Navbar = () => {
               </Button>
             </>
           )}
-          
-          <button 
+
+          <button
             className="mobile-nav-toggle"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -148,10 +148,18 @@ const Navbar = () => {
                 >
                   My Dashboard
                 </Link>
-                <Link to="/consumer/bookings" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/consumer/bookings"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   My Bookings
                 </Link>
-                <Link to="/consumer/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/consumer/profile"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Account Settings
                 </Link>
               </>
@@ -165,22 +173,34 @@ const Navbar = () => {
                 >
                   Provider Dashboard
                 </Link>
-                <Link to="/provider/jobs" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/provider/jobs"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Active Jobs
                 </Link>
-                <Link to="/provider/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/provider/profile"
+                  className="mobile-nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Account Settings
                 </Link>
               </>
             )}
             {!userRole && (
-              <Link to="/auth" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/auth"
+                className="mobile-nav-link"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 Log in
               </Link>
             )}
-            <Link to="/admin/dashboard" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+            {/* <Link to="/admin/dashboard" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
               Admin
-            </Link>
+            </Link> */}
           </div>
         </div>
       )}
