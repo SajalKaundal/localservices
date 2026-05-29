@@ -160,8 +160,7 @@ const ServiceListing = () => {
               <Card
                 key={service._id}
                 className="listing-card"
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
                   const providerIdStr =
                     typeof service.providerId === "object"
                       ? service.providerId._id
@@ -235,16 +234,15 @@ const ServiceListing = () => {
                 <div className="listing-card-right">
                   <Button
                     variant="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const providerIdStr =
-                        typeof service.providerId === "object"
-                          ? service.providerId._id
-                          : service.providerId;
-                      navigate(
-                        `/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`,
-                      );
-                    }}
+                    // onClick={() => {
+                    //   const providerIdStr =
+                    //     typeof service.providerId === "object"
+                    //       ? service.providerId._id
+                    //       : service.providerId;
+                    //   navigate(
+                    //     `/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`,
+                    //   );
+                    // }}
                   >
                     Book Now
                   </Button>
