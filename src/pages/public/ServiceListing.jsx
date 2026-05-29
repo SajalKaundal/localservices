@@ -8,7 +8,12 @@ import { fetchServices } from "../../services/publicServices";
 
 const formatCategoryHeading = (cat) => {
   if (!cat) return "Services";
-  return cat.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + " Services";
+  return (
+    cat
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ") + " Services"
+  );
 };
 
 const ServiceListing = () => {
@@ -155,7 +160,16 @@ const ServiceListing = () => {
               <Card
                 key={service._id}
                 className="listing-card"
-                onClick={() => navigate(`/service/${service._id}`)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const providerIdStr =
+                    typeof service.providerId === "object"
+                      ? service.providerId._id
+                      : service.providerId;
+                  navigate(
+                    `/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`,
+                  );
+                }}
               >
                 <div className="listing-card-left">
                   <div className="listing-avatar">
@@ -188,12 +202,22 @@ const ServiceListing = () => {
                       <h3 className="heading-4">{service.name}</h3>
                     </div>
                     <p className="body-muted" style={{ marginTop: "4px" }}>
-                      {service.pricingType === "hourly" 
-                        ? `₹${service.basePrice}/hr` 
+                      {service.pricingType === "hourly"
+                        ? `₹${service.basePrice}/hr`
                         : `₹${service.basePrice} (Fixed, ~${service.estimatedDuration} hrs)`}
                     </p>
                     {service.description && (
-                      <p className="body-muted" style={{ marginTop: "8px", fontSize: "14px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      <p
+                        className="body-muted"
+                        style={{
+                          marginTop: "8px",
+                          fontSize: "14px",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
                         {service.description}
                       </p>
                     )}
@@ -202,18 +226,24 @@ const ServiceListing = () => {
                       style={{ marginTop: "8px" }}
                     >
                       <span style={{ color: "var(--color-neon-green)" }}>
-                        ★ {service.rating || service.providerId?.rating || "New"}
+                        ★{" "}
+                        {service.rating || service.providerId?.rating || "New"}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="listing-card-right">
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const providerIdStr = typeof service.providerId === 'object' ? service.providerId._id : service.providerId;
-                      navigate(`/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`);
+                      const providerIdStr =
+                        typeof service.providerId === "object"
+                          ? service.providerId._id
+                          : service.providerId;
+                      navigate(
+                        `/consumer/book?serviceId=${service._id}&providerId=${providerIdStr}`,
+                      );
                     }}
                   >
                     Book Now
