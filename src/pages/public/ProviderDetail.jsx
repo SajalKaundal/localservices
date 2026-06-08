@@ -110,7 +110,7 @@ const ProviderDetail = () => {
                           onClick={() => {
                             if (!userRole) {
                               alert("Please login to book a service");
-                              navigate("/auth");
+                              navigate("/login");
                             } else {
                               navigate(`/consumer/book?serviceId=${s._id}&providerId=${provider._id}`);
                             }
@@ -176,13 +176,21 @@ const ProviderDetail = () => {
                 onClick={() => {
                   if (!userRole) {
                     alert("Please login to book a service");
-                    navigate("/auth");
+                    navigate("/login");
                   } else {
                     navigate(`/consumer/book?providerId=${provider._id}`);
                   }
                 }}
               >
                 Start Booking
+              </Button>
+
+              <Button
+                variant="outline"
+                style={{ width: "100%", marginTop: "12px" }}
+                onClick={() => navigate(`/provider/${provider._id}/contact`)}
+              >
+                Contact provider
               </Button>
             </Card>
           </aside>

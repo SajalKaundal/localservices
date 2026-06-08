@@ -121,7 +121,7 @@ const Navbar = () => {
             </div>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => navigate("/auth")}>
+              <Button variant="ghost" onClick={() => navigate("/login")}>
                 Log in
               </Button>
             </>
@@ -191,7 +191,7 @@ const Navbar = () => {
             )}
             {!userRole && (
               <Link
-                to="/auth"
+                to="/login"
                 className="mobile-nav-link"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

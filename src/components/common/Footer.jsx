@@ -28,7 +28,7 @@ const Footer = () => {
               Top Providers
             </Link>
             {!isAuthenticated && (
-              <Link to="/auth" className="footer-link">
+              <Link to="/login" className="footer-link">
                 Sign Up
               </Link>
             )}
@@ -36,10 +36,10 @@ const Footer = () => {
           {!isAuthenticated && (
             <div className="footer-col">
               <h4 className="footer-heading">For Providers</h4>
-              <Link to="/auth?role=provider" className="footer-link">
+              <Link to="/provider/login" className="footer-link">
                 Become a Provider
               </Link>
-              <Link to="/auth?role=provider" className="footer-link">
+              <Link to="/provider/login" className="footer-link">
                 Provider Login
               </Link>
             </div>

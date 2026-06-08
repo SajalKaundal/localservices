@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 
@@ -8,7 +8,9 @@ import CategoriesPage from '../pages/public/CategoriesPage';
 import ServiceListing from '../pages/public/ServiceListing';
 import ProviderDetail from '../pages/public/ProviderDetail';
 import ProvidersPage from '../pages/public/ProvidersPage';
-import Auth from '../pages/public/Auth';
+import ConsumerAuth from '../pages/public/ConsumerAuth';
+import ProviderAuth from '../pages/public/ProviderAuth';
+import ContactProvider from '../pages/public/ContactProvider';
 
 import DashboardLayout from '../layouts/DashboardLayout';
 import ConsumerDashboard from '../pages/consumer/Dashboard';
@@ -50,7 +52,14 @@ const AppRoutes = () => {
         <Route path="/services/:category" element={<ServiceListing />} />
         <Route path="/providers" element={<ProvidersPage />} />
         <Route path="/provider/:id" element={<ProviderDetail />} />
-        <Route path="/auth" element={<Auth />} />
+        {/* Consumer login/register */}
+        <Route path="/login" element={<ConsumerAuth />} />
+        {/* Provider login/register */}
+        <Route path="/provider/login" element={<ProviderAuth />} />
+        {/* Contact a provider */}
+        <Route path="/provider/:id/contact" element={<ContactProvider />} />
+        {/* Legacy redirect: /auth => /login */}
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
         <Route path="/consumer/book" element={<BookingFlow />} />
       </Route>
       

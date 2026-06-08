@@ -28,7 +28,7 @@ const BookingFlow = () => {
   useEffect(() => {
     if (!userRole) {
       alert("Please login to access the booking flow");
-      navigate("/auth");
+      navigate("/login");
     }
   }, [userRole, navigate]);
 
